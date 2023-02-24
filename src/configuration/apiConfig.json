@@ -1,0 +1,4 @@
+{
+  "application": "Spring Boot",
+  "baseUrlApi": "http://localhost:8080"
+}
