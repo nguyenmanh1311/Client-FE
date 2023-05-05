@@ -3,6 +3,7 @@
 .hero {
   height: 100%;
   width: 100%;
+  font-size: 12px !important;
   background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
     url(../../assets/images/login/gradienta.jpg);
   background-position: center;
@@ -10,8 +11,8 @@
   position: absolute;
 
   .form-box {
-    width: 380px;
-    height: 500px;
+    width: 450px;
+    height: 550px;
     position: relative;
     margin: 3% auto;
     background: #fff;
@@ -105,15 +106,15 @@
     }
 
     #register {
-      left: 50px;
+      left: 85px;
     }
 
     #login {
-      left: 450px;
+      left: 485px;
     }
 
     #forgetPassword {
-      left: 850px;
+      left: 885px;
     }
   }
 }

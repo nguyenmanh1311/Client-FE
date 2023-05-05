@@ -7,45 +7,43 @@ import "../../styles/Style.scss";
 import { InvoiceDetailService } from "../../services/invoiceDetail.service";
 import { AddressService } from "../../services/address.service";
 import { InvoiceService } from "../../services/invoice.service";
+import { GlobalUtil } from "../../utils/GlobalUtil";
+import FeedbackModel from "./FeedbackModel";
 
-const Order = () => {
-  const commas = (str) => {
-    return str.replace(/.(?=(?:.{3})+$)/g, "$&.");
-  };
-
+const OrderDetail = () => {
   const [invoiceDetail, setInvoiceDetail] = useState([]);
   const [address, setAddress] = useState();
-  const userId = JSON.parse(localStorage.getItem("userId"));
   const { id } = useParams();
   let total = 0;
 
+  const [showFormRating, setShowFormRating] = useState(false);
+  const [feedback, setFeedback] = useState([]);
+
+  const handleShowForm = (pro) => {
+    setShowFormRating(!showFormRating);
+    setFeedback(pro);
+    window.scrollTo(0, 0);
+  };
+
   useEffect(() => {
     let isFetched = true;
-    const fetchInvoiceDetail = () => {
-      InvoiceDetailService.getInvoiceDetailByInvoiceId(id).then((res) => {
+
+    const fetchInvoice = () => {
+      InvoiceService.getInvoiceByInvoiceId(id).then((res) => {
         if (isFetched) {
           setInvoiceDetail(res.data);
         }
       });
     };
-    const fetchInvoice = () => {
-      InvoiceService.getInvoiceByInvoiceId(id).then((res) => {
-        if (isFetched) {
-          AddressService.getAddressByID(res.data.addressId ?? 0).then((res) => {
-            setAddress(res.data);
-          });
-        }
-      });
-    };
     fetchInvoice();
-
-    fetchInvoiceDetail();
     return () => {
       isFetched = false;
     };
-  }, []);
+  }, [id]);
   return (
     <>
+      {showFormRating && <div className="fullscreen"></div>}
+
       <Header />
       <div id="all">
         <div id="content">
@@ -69,12 +67,9 @@ const Order = () => {
               <SidebarCustomer />
               <div id="customer-order" className="col-lg-9">
                 <div className="box">
-                  <form>
-                    <h1>Đơn hàng #{id}</h1>
-                    <p className="lead">
-                      Đơn hàng số {id} đã được đặt vào ngày 22/06/2013 và hiện
-                      đang được chuẩn bị.
-                    </p>
+                  <div className="description-conatainer">
+                    <h1>Đơn hàng </h1>
+                    <p className="lead">Đơn hàng hiện đang được chuẩn bị.</p>
                     <p className="text-muted">
                       Nếu bạn có thắc mắc, vui lòng{" "}
                       <Link to={`/contact`}>
@@ -82,82 +77,10 @@ const Order = () => {
                       </Link>
                       , dịch vụ chăm sóc khách hàng của chúng tôi hoạt động 24/7
                     </p>
-                    <hr />
-                    <div className="table-responsive">
-                      <table className="table">
-                        <thead>
-                          <tr style={{ textAlign: "center" }}>
-                            <th colspan="2">Sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Khuyến mãi</th>
-                            <th>Tổng</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {invoiceDetail.map((item) => {
-                            total = total + item.price * item.quantity;
-                            return (
-                              <tr key={item.id} style={{ textAlign: "center" }}>
-                                <td>
-                                  <Link to={`/product-detail/${item.id}`}>
-                                    <img
-                                      src={
-                                        "http://localhost:8080/api/v1/image_product/" +
-                                        item.productImage
-                                      }
-                                      alt={item.productName}
-                                    />
-                                  </Link>
-                                </td>
-                                <td style={{ textAlign: "left" }}>
-                                  <Link to={`/product-detail/${item.id}`}>
-                                    {item.productName}
-                                  </Link>
-                                </td>
-                                <td>{item.quantity}</td>
-                                <td>{commas(Number(item.price) + "") + "₫"}</td>
-                                <td>0</td>
-                                <td>
-                                  {" "}
-                                  {commas(
-                                    Number(item.price) * Number(item.quantity) +
-                                      ""
-                                  ) + "₫"}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                          <tr>
-                            <th style={{ textAlign: "center" }} colSpan="5">
-                              Chi phí vận chuyển
-                            </th>
-                            <th style={{ textAlign: "center" }} colSpan="2">
-                              {commas(50000 + "") + "₫"}
-                            </th>
-                          </tr>
-                          ;
-                        </tbody>
-                        <tfoot>
-                          {total !== 0 && (
-                            <tr>
-                              <th style={{ textAlign: "center" }} colSpan="5">
-                                Tổng tiền
-                              </th>
-                              <th style={{ textAlign: "center" }} colSpan="2">
-                                {commas(total + "") + "₫"}
-                              </th>
-                            </tr>
-                          )}
-                        </tfoot>
-                      </table>
-                    </div>
+
                     <div className="row addresses">
                       <div className="col-lg-6"></div>
                       <div className="col-lg-6">
-                        <br />
-                        <br />
-                        <br />
                         <h2>Địa chỉ nhận hàng</h2>
                         <p style={{ textAlign: "left" }}>
                           {address?.addressLine},
@@ -170,8 +93,83 @@ const Order = () => {
                         </p>
                       </div>
                     </div>
-                  </form>
+                  </div>
+                  {invoiceDetail.invoice_details &&
+                    invoiceDetail?.invoice_details.map((pro, index) => {
+                      return (
+                        <div>
+                          <div
+                            className="container d-flex align-items-center justify-content-between"
+                            key={index}
+                          >
+                            <div className="product-container d-flex">
+                              <div className="img-product">
+                                <img
+                                  src={
+                                    "https://" +
+                                    pro?.product.product_images[0].uri
+                                  }
+                                />
+                              </div>
+                              <div className="info-product d-flex flex-column align-items-start">
+                                <div className="name">
+                                  <strong>{pro?.product?.name}</strong>
+                                </div>
+                                <div className="color">Màu sắc: </div>
+                                <div className="price">
+                                  {GlobalUtil.commas(pro?.sold_price + "") +
+                                    "₫"}
+                                </div>
+                                <div className="quantity">x{pro?.quantity}</div>
+                              </div>
+                            </div>
+                            <div className="button-container">
+                              <button
+                                className="btn btn-rating gradient"
+                                onClick={() => handleShowForm(pro)}
+                              >
+                                Đánh giá
+                              </button>
+                            </div>
+                          </div>
+                          <hr />
+                        </div>
+                      );
+                    })}
+
+                  <div className="price-detail-container ">
+                    <div className="row-detail d-flex justify-content-end align-items-center">
+                      <div className="title">Tổng tiền hàng</div>
+                      <div className="price col-3 d-flex justify-content-end">
+                        200000
+                      </div>
+                    </div>
+                    <div className="row-detail d-flex justify-content-end align-items-center">
+                      <div className="title">Phí vận chuyển</div>
+                      <div className="price col-3 d-flex justify-content-end">
+                        ₫24.700
+                      </div>
+                    </div>
+                    <div className="row-detail d-flex justify-content-end align-items-center">
+                      <div className="title">Thành tiền</div>
+                      <div className="price col-3 d-flex justify-content-end">
+                        <div className="big-size">₫93.000</div>
+                      </div>
+                    </div>
+                    <div className="row-detail d-flex justify-content-end align-items-center">
+                      <div className="title">Phương thức Thanh toán</div>
+                      <div className="price col-3 d-flex justify-content-end">
+                        Ví ShopeePay
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                {showFormRating && (
+                  <FeedbackModel
+                    handleShowForm={handleShowForm}
+                    feedback={feedback}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -182,4 +180,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default OrderDetail;

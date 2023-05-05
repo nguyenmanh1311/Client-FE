@@ -18,24 +18,33 @@ import Chat from "../components/Chat/Chat";
 const Home = () => {
   const [productFeature, setProductFeature] = useState([]);
   const [productNew, setProductNew] = useState([]);
+
+  // window.onbeforeunload = function () {
+  //   localStorage.clear();
+  // };
+
   useEffect(() => {
     let isFetched = true;
-    const fetchProductFeature = () => {
-      ProductService.getAllTopSelling().then((res) => {
-        if (isFetched) {
-          setProductFeature(res.data);
-        }
-      });
-    };
+    // const fetchProductFeature = () => {
+    //   ProductService.getAllTopSelling().then((res) => {
+    //     if (isFetched) {
+    //       setProductFeature(res.data);
+    //     }
+    //   });
+    // };
 
     const fetch8ProductNew = () => {
-      ProductService.get8ProductNew().then((res) => {
+      const data = {
+        page_count: 8,
+        order_by: "CreatedAt desc",
+      };
+      ProductService.getAllProduct(data).then((res) => {
         if (isFetched) {
           setProductNew(res.data);
         }
       });
     };
-    fetchProductFeature();
+    // fetchProductFeature();
     fetch8ProductNew();
     return () => {
       isFetched = false;
@@ -133,13 +142,11 @@ const Home = () => {
               {productNew.map((item) => {
                 return (
                   <Gallery
-                    key={item.id}
-                    id={item.id}
-                    image={
-                      "http://localhost:8080/api/v1/image_product/" + item.image
-                    }
-                    name={item.name}
-                    price={item.price}
+                    key={item?.id}
+                    id={item?.id}
+                    image={"http://" + item?.product_images[0]?.uri}
+                    name={item?.name}
+                    price={item?.price}
                   />
                 );
               })}

@@ -32,21 +32,21 @@ const AddressAdd = () => {
   };
 
   const onSave = () => {
-    const user = JSON.parse(localStorage.getItem("userId"));
     const createData = {
-      fullName: fullName.current.value,
-      phone: phone.current.value,
-      addressLine: addressLine.current.value,
-      province: province?.label ? province?.label : selectedCity?.label,
-      district: district?.label ? district?.label : selectedDistrict?.label,
-      ward: ward?.label ? ward?.label : selectedWard?.label,
-      provinceId: province?.value ? province?.value : selectedCity?.value,
-      districtId: district?.value ? district?.value : selectedDistrict?.value,
-      wardId: ward?.value ? ward?.value : selectedWard?.value,
-      userId: user,
+      fullname: fullName.current.value,
+      phone_number: phone.current.value,
+      address_string: addressLine.current.value,
+      province_name: province?.label ? province?.label : selectedCity?.label,
+      district_name: district?.label
+        ? district?.label
+        : selectedDistrict?.label,
+      ward_name: ward?.label ? ward?.label : selectedWard?.label,
+      province_id: province?.value ? province?.value : selectedCity?.value,
+      district_id: district?.value ? district?.value : selectedDistrict?.value,
+      ward_id: ward?.value ? ward?.value : selectedWard?.value,
     };
     AddressService.createAddress(createData).then((response) => {
-      if (response.status === "OK") {
+      if (response.status_code === 200) {
         navigate(-1);
       } else {
         Swal.fire("Tạo địa chỉ không thành công", "Thông báo", "warning");

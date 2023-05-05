@@ -5,14 +5,14 @@ import "./Header.scss";
 import logo from "../../assets/images/logo/baloshop-black.png";
 
 import { FaShoppingCart } from "react-icons/fa";
-import { BsSearch } from "react-icons/bs";
+import { ImSearch } from "react-icons/im";
 import { GoPerson } from "react-icons/go";
 import { CategoryService } from "../../services/category.service";
 import { BrandService } from "../../services/brand.service";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import swal2 from "sweetalert2";
-import { UserService } from "../../services/user.service";
+import { AuthService } from "../../services/auth.service";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -20,8 +20,6 @@ const Header = () => {
   const [allCategory, setAllCategory] = useState([]);
   const [searchInput, setSearchInput] = useState([]);
   const [user, setUser] = useState([]);
-  const userId = JSON.parse(localStorage.getItem("userId"));
-
   const logoutOnclick = async () => {
     swal2
       .fire({
@@ -33,6 +31,7 @@ const Header = () => {
       .then((result) => {
         if (result.isConfirmed) {
           localStorage.clear();
+          AuthService.logout();
           window.location.reload();
         } else if (result.isDenied) {
         }
@@ -88,20 +87,24 @@ const Header = () => {
       });
     };
 
-    const fetchUser = () => {
-      UserService.getUserByUserID(userId).then((res) => {
-        if (isFetched) {
-          setUser(res.data);
-        }
-      });
-    };
-    fetchUser();
+    const accessToken = localStorage?.getItem("accessToken");
+    if (accessToken) {
+      const fetchProfile = () => {
+        AuthService.getProfile().then((res) => {
+          if (res.status_code === 200) {
+            setUser(res.data);
+          }
+        });
+      };
+      fetchProfile();
+    }
+
     fetchshowAllBrand();
     fetchshowAllCategory();
     return () => {
       isFetched = false;
     };
-  }, [userId]);
+  }, []);
 
   return (
     <div className="header">
@@ -131,7 +134,7 @@ const Header = () => {
                   data-delay="200"
                   className="dropdown-toggle nav-link"
                 >
-                  Sản phẩm<b className="caret"></b>
+                  Loại Balo<b className="caret"></b>
                 </Link>
                 <ul className="dropdown-menu menu-product megamenu">
                   <li>
@@ -140,12 +143,12 @@ const Header = () => {
                         {allCategory.map((item) => {
                           return (
                             <li className="nav-item" key={item.id}>
-                              <Link
-                                to={`/product/category/${item.id}`}
+                              <a
+                                href={`/product/category/${item.id}`}
                                 className="nav-link"
                               >
                                 {item.name}
-                              </Link>
+                              </a>
                             </li>
                           );
                         })}
@@ -171,12 +174,12 @@ const Header = () => {
                         {allBrand.map((item) => {
                           return (
                             <li className="nav-item" key={item.id}>
-                              <Link
-                                to={`/product/brand/${item.id}`}
+                              <a
+                                href={`/product/brand/${item.id}`}
                                 className="nav-link"
                               >
                                 {item.name}
-                              </Link>
+                              </a>
                             </li>
                           );
                         })}
@@ -184,6 +187,11 @@ const Header = () => {
                     </div>
                   </li>
                 </ul>
+              </li>
+              <li className="nav-item">
+                <Link to="/news" className="nav-link">
+                  Tin tức
+                </Link>
               </li>
               <li className="nav-item">
                 <Link to="/contact" className="nav-link">
@@ -203,15 +211,15 @@ const Header = () => {
 
                 <button
                   id="btn-search"
-                  data-toggle="collapse"
-                  href="#search"
-                  className="btn navbar-btn d-none d-lg-inline-block"
+                  className="btn navbar-btn d-flex justify-content-center align-items-center"
                   onClick={onClickSearch}
                 >
-                  <BsSearch
+                  <ImSearch
+                    size={16}
+                    style={{ textAlign: "center" }}
+                    color="white"
                     className="fa fa-search"
-                    style={{ marginTop: "3px" }}
-                  ></BsSearch>
+                  ></ImSearch>
                 </button>
               </div>
               <div
@@ -261,12 +269,9 @@ const Header = () => {
                       aria-expanded="false"
                     >
                       <img
-                        src={
-                          "http://localhost:8080/api/v1/image_product/" +
-                          user.photo
-                        }
+                        src={user.avatar ? "https://" + user.avatar : ""}
                         className="rounded-circle "
-                        style={{ height: "30px" }}
+                        style={{ height: "25px" }}
                         alt="..."
                       />
                     </div>

@@ -1,32 +1,42 @@
-import axios from "axios";
+import { axiosInstance } from "../configuration/axios.config";
 import configAPI from "../configuration/apiConfig.json";
 
-const getAllInvoiceByUserId = (userId) => {
-  return axios
-    .get(configAPI.baseUrlApi + "/api/v1/invoice/" + userId)
+const getAllInvoice = () => {
+  return axiosInstance
+    .get(configAPI.baseUrlApiMain + "/invoice/my-invoice")
     .then((res) => {
       return res.data;
     });
 };
 
 const createInvoiceByCartId = (cartId) => {
-  return axios
-    .post(configAPI.baseUrlApi + "/api/v1/invoice/" + cartId)
+  return axiosInstance
+    .post(configAPI.baseUrlApiMain + "/api/v1/invoice/" + cartId)
     .then((res) => {
       return res.data;
     });
 };
 const getInvoiceByInvoiceId = (id) => {
-  return axios
-    .get(configAPI.baseUrlApi + "/api/v1/invoice/invoiceid/" + id)
+  return axiosInstance
+    .get(configAPI.baseUrlApiMain + "/invoice/" + id)
     .then((res) => {
       return res.data;
     });
 };
+
+const placeOrderByPayMethodAndAddress = (data) => {
+  return axiosInstance
+    .post(configAPI.baseUrlApiMain + "/invoice", data)
+    .then((res) => {
+      return res.data;
+    });
+};
+
 const placeOrderByCartIdAndAddress = (cartId, addressId) => {
-  return axios
+  return axiosInstance
     .post(
-      configAPI.baseUrlApi + `/api/v1/invoice/${cartId}/address/${addressId}`
+      configAPI.baseUrlApiMain +
+        `/api/v1/invoice/${cartId}/address/${addressId}`
     )
     .then((res) => {
       return res.data;
@@ -34,24 +44,25 @@ const placeOrderByCartIdAndAddress = (cartId, addressId) => {
 };
 
 const updatePaymentStatus = (id) => {
-  return axios
-    .patch(configAPI.baseUrlApi + "/api/v1/invoice/payment/" + id)
+  return axiosInstance
+    .patch(configAPI.baseUrlApiMain + "/api/v1/invoice/payment/" + id)
     .then((response) => {
       return response.data;
     });
 };
 const cancelInvoice = (id) => {
-  return axios
-    .delete(configAPI.baseUrlApi + "/api/v1/invoice/" + id)
+  return axiosInstance
+    .delete(configAPI.baseUrlApiMain + "/api/v1/invoice/" + id)
     .then((response) => {
       return response.data;
     });
 };
 
 export const InvoiceService = {
-  getAllInvoiceByUserId,
+  getAllInvoice,
   createInvoiceByCartId,
   placeOrderByCartIdAndAddress,
+  placeOrderByPayMethodAndAddress,
   updatePaymentStatus,
   cancelInvoice,
   getInvoiceByInvoiceId,

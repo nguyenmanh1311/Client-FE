@@ -34,19 +34,19 @@ const CheckAddress = () => {
   } = state;
 
   const validateForm = (obj) => {
-    if (String(obj.addressLine) === "") {
+    if (String(obj.address_string) === "") {
       Swal.fire("Thông báo", "Vui lòng nhập số nhà, tên đường", "warning");
       return false;
     }
-    if (obj.provinceId === undefined) {
+    if (obj.province_id === undefined) {
       Swal.fire("Thông báo", "Vui lòng chọn thành phố / tỉnh", "warning");
       return false;
     }
-    if (obj.districtId === undefined) {
+    if (obj.district_id === undefined) {
       Swal.fire("Thông báo", "Vui lòng chọn quận / huyện", "warning");
       return false;
     }
-    if (obj.wardId === undefined) {
+    if (obj.ward_id === undefined) {
       Swal.fire("Thông báo", "Vui lòng chọn xã / phường", "warning");
       return false;
     }
@@ -54,23 +54,23 @@ const CheckAddress = () => {
   };
 
   const onClickConfirm = () => {
-    const user = JSON.parse(localStorage.getItem("userId"));
     const createData = {
-      fullName: fullName.current.value,
-      phone: phone.current.value,
-      addressLine: addressLine.current.value,
-      province: province?.label ? province?.label : selectedCity?.label,
-      district: district?.label ? district?.label : selectedDistrict?.label,
-      ward: ward?.label ? ward?.label : selectedWard?.label,
-      provinceId: selectedCity?.value,
-      districtId: selectedDistrict?.value,
-      wardId: selectedWard?.value,
-      userId: user,
+      fullname: fullName.current.value,
+      phone_number: phone.current.value,
+      address_string: addressLine.current.value,
+      province_name: province?.label ? province?.label : selectedCity?.label,
+      district_name: district?.label
+        ? district?.label
+        : selectedDistrict?.label,
+      ward_name: ward?.label ? ward?.label : selectedWard?.label,
+      province_id: province?.value ? province?.value : selectedCity?.value,
+      district_id: district?.value ? district?.value : selectedDistrict?.value,
+      ward_id: ward?.value ? ward?.value : selectedWard?.value,
     };
     if (validateForm(createData)) {
       AddressService.createAddress(createData).then((response) => {
-        if (response.status === "OK") {
-          localStorage.setItem("address", JSON.stringify(response.data));
+        if (response.status_code === 200) {
+          localStorage.setItem("address-id", JSON.stringify(response.data.id));
           navigate("/check-method");
         }
       });
@@ -79,8 +79,8 @@ const CheckAddress = () => {
 
   const chooseAddressClickHandle = () => {
     AddressService.getAddressByID(addressId).then((response) => {
-      if (response.status === "OK") {
-        localStorage.setItem("address", JSON.stringify(response.data));
+      if (response.status_code === 200) {
+        localStorage.setItem("address-id", JSON.stringify(response.data.id));
         navigate("/check-method");
       } else {
         Swal.fire("Thông báo", "Vui lòng chọn vào 1 địa chỉ", "warning");
@@ -89,10 +89,9 @@ const CheckAddress = () => {
   };
 
   useEffect(() => {
-    const userId = JSON.parse(localStorage.getItem("userId"));
     let isFetched = true;
     const fetchAddressList = () => {
-      AddressService.getAddressByUserID(userId).then((res) => {
+      AddressService.getAddress().then((res) => {
         setAddressList(res.data);
       });
     };
@@ -130,12 +129,7 @@ const CheckAddress = () => {
                 </div>
               </div>
               <div className="col-lg-6">
-                <div
-                  className="box"
-                  onChange={(e) => {
-                    setAddressId(Number(e.target.value));
-                  }}
-                >
+                <div className="box">
                   <h3 className="font-weight-bold text-info">
                     Chọn địa chỉ đã lưu
                   </h3>
@@ -148,6 +142,9 @@ const CheckAddress = () => {
                             name="address"
                             className="w-[30px]"
                             value={item.id}
+                            onChange={(e) => {
+                              setAddressId(item.id);
+                            }}
                           />{" "}
                           <AddressItem {...item} />
                         </label>

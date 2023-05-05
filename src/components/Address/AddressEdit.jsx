@@ -46,20 +46,21 @@ function AddressEdit() {
   };
 
   const onSave = () => {
-    const user = JSON.parse(localStorage.getItem("userId"));
     const updateData = {
-      fullName: fullName.current.value,
-      phone: phone.current.value,
-      addressLine: addressLine.current.value,
-      province: province?.label ? province?.label : selectedCity?.label,
-      district: district?.label ? district?.label : selectedDistrict?.label,
-      ward: ward?.label ? ward?.label : selectedWard?.label,
-      provinceId: province?.value ? province?.value : selectedCity?.value,
-      districtId: district?.value ? district?.value : selectedDistrict?.value,
-      wardId: ward?.value ? ward?.value : selectedWard?.value,
+      fullname: fullName.current.value,
+      phone_number: phone.current.value,
+      address_string: addressLine.current.value,
+      province_name: province?.label ? province?.label : selectedCity?.label,
+      district_name: district?.label
+        ? district?.label
+        : selectedDistrict?.label,
+      ward_name: ward?.label ? ward?.label : selectedWard?.label,
+      province_id: province?.value ? province?.value : selectedCity?.value,
+      district_id: district?.value ? district?.value : selectedDistrict?.value,
+      ward_id: ward?.value ? ward?.value : selectedWard?.value,
     };
     AddressService.updateAddress(updateData, id).then((response) => {
-      if (response.status === "OK") {
+      if (response.status_code === 200) {
         navigate(-1);
       } else {
         Swal.fire("Cập nhật địa chỉ không thành công", "Thông báo", "warning");
@@ -105,7 +106,7 @@ function AddressEdit() {
                           id="fullname"
                           type="text"
                           className="form-control"
-                          defaultValue={address?.fullName}
+                          defaultValue={address?.fullname}
                         />
                       </div>
                     </div>
@@ -120,7 +121,7 @@ function AddressEdit() {
                           type="tel"
                           ref={phone}
                           className="form-control"
-                          defaultValue={address?.phone}
+                          defaultValue={address?.phone_number}
                         />
                       </div>
                     </div>
@@ -135,7 +136,7 @@ function AddressEdit() {
                           ref={addressLine}
                           id="street"
                           className="form-control"
-                          defaultValue={address?.addressLine}
+                          defaultValue={address?.address_string}
                         />
                       </div>
                     </div>

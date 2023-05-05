@@ -5,45 +5,39 @@ import { Link } from "react-router-dom";
 import { useDataContext } from "../../context/DataProvider";
 import { BrandService } from "../../services/brand.service";
 import { CategoryService } from "../../services/category.service";
-import { ProductService } from "../../services/product.service";
 // import "../../styles/Style.scss";
 import "./Sidebar.scss";
 
-const SidebarProduct = ({ cateId }) => {
-  let isFetched = true;
+const SidebarProduct = ({ category_id, brand_id }) => {
   const [allBrand, setAllBrand] = useState([]);
   const [allCategory, setAllCategory] = useState([]);
 
-  const { setProductData } = useDataContext();
+  const { color, setColor } = useDataContext();
+  const { categories, setCategories } = useDataContext();
+  const { brands, setBrands } = useDataContext();
+  const { minPrice, setMinPrice } = useDataContext();
+  const { maxPrice, setMaxPrice } = useDataContext();
+  const { currentPageNumber } = useDataContext();
+  const { orderBy } = useDataContext();
+  const { pageCount } = useDataContext();
 
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(9999999999);
   const minPriceRef = useRef();
   const maxPriceRef = useRef();
-  const fetchshowAllProduct = () => {
-    const data = {
-      brandIds: brands,
-      categoryIds: categories,
-      maxPrice: maxPrice,
-      minPrice: minPrice,
-    };
-    ProductService.getProductByFilter(data).then((res) => {
-      if (res?.status === "OK") {
-        setProductData(res.data);
-      }
-    });
-  };
+  let isFetched = true;
   useEffect(() => {
-    if (isFetched) {
-      fetchshowAllProduct();
-    }
     return () => {
       isFetched = false;
     };
-  }, [categories, brands]);
+  }, [
+    categories,
+    brands,
+    color,
+    minPrice,
+    maxPrice,
+    currentPageNumber,
+    orderBy,
+    pageCount,
+  ]);
 
   useEffect(() => {
     const fetchshowAllCategory = () => {
@@ -66,25 +60,18 @@ const SidebarProduct = ({ cateId }) => {
       isFetched = false;
     };
   }, []);
-  let input = {
-    categoryId: Number(cateId),
-    branchId: null,
-  };
 
   const applyFilterPriceHandleClick = () => {
-    setMinPrice(Number(minPriceRef.current.value));
-    setMaxPrice(Number(maxPriceRef.current.value));
-    const data = {
-      brandIds: brands,
-      categoryIds: categories,
-      maxPrice: Number(maxPriceRef.current.value),
-      minPrice: Number(minPriceRef.current.value),
-    };
-    ProductService.getProductByFilter(data).then((res) => {
-      if (res?.status === "OK") {
-        setProductData(res.data);
-      }
-    });
+    setMinPrice(
+      Number(minPriceRef.current.value) == 0
+        ? null
+        : Number(minPriceRef.current.value)
+    );
+    setMaxPrice(
+      Number(maxPriceRef.current.value) == 0
+        ? null
+        : Number(maxPriceRef.current.value)
+    );
   };
   return (
     <div className="col-lg-3">
@@ -109,15 +96,16 @@ const SidebarProduct = ({ cateId }) => {
                         <input
                           type="checkbox"
                           value={item.id}
+                          defaultChecked={item.id === category_id}
                           onChange={(e) => {
                             if (e.target.checked) {
                               setCategories((pre) => {
-                                return [...pre, Number(e.target.value)];
+                                return [...pre, e.target.value];
                               });
                             } else {
                               setCategories((pre) => {
                                 return pre.filter(
-                                  (item) => item !== Number(e.target.value)
+                                  (item) => item !== e.target.value
                                 );
                               });
                             }
@@ -129,6 +117,198 @@ const SidebarProduct = ({ cateId }) => {
                     </div>
                   );
                 })}
+              </div>
+            </li>
+            <hr width="100%" size="5px" />
+            <li>
+              <Link to={``} className="nav-link">
+                Màu sắc
+              </Link>
+              <div className="form-group" style={{ paddingLeft: "16px" }}>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Đen"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Đen</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Xám"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Xám</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Trắng"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Trắng</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Đỏ"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Đỏ</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Vàng"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Vàng</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Cam"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Cam</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Xanh dương"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Xanh dương</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value="Xanh lá"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Xanh lá</div>
+                  </label>
+                </div>
               </div>
             </li>
             <hr width="100%" size="5px" />
@@ -147,15 +327,16 @@ const SidebarProduct = ({ cateId }) => {
                         <input
                           type="checkbox"
                           value={item.id}
+                          defaultChecked={item.id === brand_id}
                           onChange={(e) => {
                             if (e.target.checked) {
                               setBrands((pre) => {
-                                return [...pre, Number(e.target.value)];
+                                return [...pre, e.target.value];
                               });
                             } else {
                               setBrands((pre) => {
                                 return pre.filter(
-                                  (item) => item !== Number(e.target.value)
+                                  (item) => item !== e.target.value
                                 );
                               });
                             }
@@ -168,42 +349,35 @@ const SidebarProduct = ({ cateId }) => {
                   );
                 })}
               </div>
-              <hr width="100%" size="5px" />
-              <div className="apply-container">
-                <Link
-                  to={``}
-                  className="nav-link d-flex justify-content-center"
-                >
-                  Giá
-                </Link>
-                <div className="d-flex flex-column d-flex justify-content-center align-items-center">
-                  <div className="d-flex justify-content-between align-items-center ml-2 mr-2">
-                    Từ
-                    <input
-                      className="col-lg-9"
-                      type="number"
-                      ref={minPriceRef}
-                    />
-                  </div>
-                  <div className="d-flex justify-content-between align-items-center ml-2 mr-2">
-                    Đến
-                    <input
-                      className="col-lg-9 mt-2"
-                      type="number"
-                      ref={maxPriceRef}
-                    />
-                  </div>
-                </div>
-                <br />
-                <button className="btn" onClick={applyFilterPriceHandleClick}>
-                  <FaPenFancy
-                    className="fa fa-pencil"
-                    style={{ marginBottom: "-2px" }}
-                  ></FaPenFancy>{" "}
-                  Áp dụng
-                </button>
-              </div>
             </li>
+            <hr width="100%" size="5px" />
+            <div className="apply-container">
+              <Link to={``} className="nav-link d-flex justify-content-center">
+                Giá
+              </Link>
+              <div className="d-flex flex-column d-flex justify-content-center align-items-center">
+                <div className="d-flex justify-content-between align-items-center ml-2 mr-2">
+                  Từ
+                  <input className="col-lg-9" type="number" ref={minPriceRef} />
+                </div>
+                <div className="d-flex justify-content-between align-items-center ml-2 mr-2">
+                  Đến
+                  <input
+                    className="col-lg-9 mt-2"
+                    type="number"
+                    ref={maxPriceRef}
+                  />
+                </div>
+              </div>
+              <br />
+              <button className="btn" onClick={applyFilterPriceHandleClick}>
+                <FaPenFancy
+                  className="fa fa-pencil"
+                  style={{ marginBottom: "-2px" }}
+                ></FaPenFancy>{" "}
+                Áp dụng
+              </button>
+            </div>
           </ul>
         </div>
       </div>

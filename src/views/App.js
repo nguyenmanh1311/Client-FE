@@ -31,22 +31,21 @@ import Product from "../pages/Product";
 import AllOrder from "../pages/Order/AllOrder";
 import OrderDetail from "../pages/Order/OrderDetail";
 import OTP from "../components/OTP/OTP";
-import ChangePassword from "../components/Login/ChangePassword";
+import News from "../pages/News";
 
 function App() {
   return (
     <div className="App">
       <div className="Content-App">
-        <BrowserRouter basename="/ClientFE">
+        <BrowserRouter>
           <Routes>
             <Route path="/payment">
               <Route path="success" element={<PaymentSuccess />} />
               <Route path="fail" element={<PaymentFail />} />
             </Route>
             <Route path="/success" element={<Success />} />
-            <Route exact path="/ClientFE" element={<Home />} />
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/otp" element={<OTP />} />
             <Route path="/error" element={<Error />} />
             <Route path="/basket" element={<Basket />} />
@@ -73,6 +72,7 @@ function App() {
             </Route>
 
             <Route path="/contact" element={<Contact />} />
+            <Route path="/news" element={<News />} />
 
             <Route path="/account">
               <Route index element={<Account />} />
@@ -87,7 +87,14 @@ function App() {
             <Route path="/order-detail">
               <Route path=":id" element={<OrderDetail />} />
             </Route>
-            <Route path="/all-order" element={<AllOrder />} />
+            <Route path="/all-order">
+              <Route index element={<AllOrder />} />
+              <Route path="all" element={<AllOrder />} />
+
+              <Route path="delivering" element={<AllOrder />} />
+              <Route path="complete" element={<AllOrder />} />
+              <Route path="cancel" element={<AllOrder />} />
+            </Route>
             <Route path="/wishlist" element={<Wishlist />} />
           </Routes>
         </BrowserRouter>

@@ -1,11 +1,9 @@
 import React from "react";
 import "../../styles/Style.scss";
 import { Link } from "react-router-dom";
+import { GlobalUtil } from "../../utils/GlobalUtil";
 
 const Gallery = ({ id, image, name, price, discount }) => {
-  const commas = (str) => {
-    return str.replace(/.(?=(?:.{3})+$)/g, "$&.");
-  };
   return (
     <div className="item">
       <div className="product ">
@@ -32,7 +30,7 @@ const Gallery = ({ id, image, name, price, discount }) => {
           </h3>
           <p className="price">
             <del></del>
-            <font color="red">{commas(price + "") + "₫"}</font>
+            <font color="red">{GlobalUtil.commas(price + "") + "₫"}</font>
           </p>
         </div>
         {discount && <span className="percent">{discount}</span>}

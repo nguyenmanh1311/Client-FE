@@ -5,6 +5,7 @@ import "../../styles/Style.scss";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
 import { CartService } from "../../services/cart.service";
+import { GlobalUtil } from "../../utils/GlobalUtil";
 
 import { Link, useNavigate } from "react-router-dom";
 import { AddressService } from "../../services/address.service";
@@ -17,9 +18,6 @@ import { InvoiceService } from "../../services/invoice.service";
 import { PaymentService } from "../../services/payment.service";
 
 const CheckMethod = () => {
-  const commas = (str) => {
-    return str.replace(/.(?=(?:.{3})+$)/g, "$&.");
-  };
   const [cartDetail, setCartDetail] = useState([]);
   const [cartId, setCartId] = useState("");
   const [paymentId, setPaymentId] = useState(null);
@@ -33,39 +31,50 @@ const CheckMethod = () => {
   const navigate = useNavigate();
 
   const placeOrder = () => {
-    const address = JSON.parse(localStorage.getItem("address"));
-    InvoiceService.placeOrderByCartIdAndAddress(cartId, address.id).then(
-      (res) => {
-        if (res.status === "OK") {
-          if (paymentId === 2) {
-            const paymentData = {
-              orderInfo: "Đặt hàng balo",
-              amount: res.data.grandTotal,
-              returnUrl: window.origin + "/checkout_result",
-              extraData: res.data.id,
-            };
-            PaymentService.createPayment(paymentData).then((res) => {
-              if (res.status === "OK") {
-                window.location.href = res.data;
-              }
-            });
-          } else {
+    const addressId = JSON.parse(localStorage.getItem("address-id"));
+    if (paymentId === 3) {
+      const paymentData = {
+        payment_method: 3,
+        address_id: addressId,
+      };
+      InvoiceService.placeOrderByPayMethodAndAddress(paymentData).then(
+        (res) => {
+          if (res.status_code === 200) {
             navigate("/success");
           }
         }
-      }
-    );
+      );
+    }
+
+    // InvoiceService.placeOrderByCartIdAndAddress(cartId, addressId).then(
+    //   (res) => {
+    //     if (res.status === 200) {
+    //       if (paymentId === 3) {
+    //         const paymentData = {
+    //           payment_method: 3,
+    //           address_id: addressId,
+    //         };
+    //         PaymentService.createPayment(paymentData).then((res) => {
+    //           if (res.status_code === 200) {
+    //             window.location.href = res.data;
+    //           }
+    //         });
+    //       } else {
+    //         navigate("/success");
+    //       }
+    //     }
+    //   }
+    // );
   };
 
   useEffect(() => {
-    const userId = JSON.parse(localStorage.getItem("userId"));
     let isFetched = true;
 
     const fetchCart = () => {
-      CartService.getCartId(userId).then((res) => {
+      CartService.getCart().then((res) => {
         setCartId(res.data.id);
         if (isFetched) {
-          CartService.getAllCartDetailByCartID(res.data.id).then((res) => {
+          CartService.getAllCartDetailByCartID(cartId).then((res) => {
             if (isFetched) {
               if (res.data == null) {
                 navigate("/basket");
@@ -155,15 +164,17 @@ const CheckMethod = () => {
                       </thead>
                       <tbody>
                         {cartDetail.map((item) => {
-                          total = total + item.price * item.quantity;
+                          total =
+                            total +
+                            item?.product?.price * item?.product?.quantity;
                           return (
                             <tr key={item.id}>
                               <td>
                                 <Link to={`/product-detail`}>
                                   <img
                                     src={
-                                      "http://localhost:8080/api/v1/image_product/" +
-                                      item.image
+                                      "https://" +
+                                      item?.product?.product_images[0].uri
                                     }
                                     style={{
                                       width: "50px",
@@ -174,7 +185,9 @@ const CheckMethod = () => {
                                 </Link>
                               </td>
                               <td>
-                                <Link to={`/product-detail`}>{item.name}</Link>
+                                <Link to={`/product-detail`}>
+                                  {item?.product?.name}
+                                </Link>
                               </td>
                               <td
                                 style={{
@@ -188,7 +201,9 @@ const CheckMethod = () => {
                                   textAlign: "center",
                                 }}
                               >
-                                {commas(Number(item.price) + "") + "₫"}
+                                {GlobalUtil.commas(
+                                  Number(item?.product?.price) + ""
+                                ) + "₫"}
                               </td>
 
                               <td
@@ -196,8 +211,9 @@ const CheckMethod = () => {
                                   textAlign: "center",
                                 }}
                               >
-                                {commas(
-                                  Number(item.price) * Number(item.quantity) +
+                                {GlobalUtil.commas(
+                                  Number(item?.product?.price) *
+                                    Number(item.quantity) +
                                     ""
                                 ) + "₫"}
                               </td>
@@ -222,7 +238,7 @@ const CheckMethod = () => {
                                 textAlign: "center",
                               }}
                             >
-                              {commas(total + "") + "₫"}
+                              {GlobalUtil.commas(total + "") + "₫"}
                             </th>
                           </tr>
                         )}
@@ -316,7 +332,7 @@ const CheckMethod = () => {
                           name="payment"
                           className="mr-2"
                           id="cod"
-                          value="1"
+                          value="3"
                         />
                         THANH TOÁN KHI NHẬN HÀNG (COD)
                       </div>

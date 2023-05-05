@@ -127,7 +127,7 @@ const Contact = () => {
                     style={{ width: "100%" }}
                     allowFullScreen=""
                     loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
+                    referrerPolicy="no-referrer-when-downgrade"
                   ></iframe>
                   <br />
                   <hr />
@@ -136,7 +136,7 @@ const Contact = () => {
                     <div className="row">
                       <div className="col-md-12">
                         <div className="form-group">
-                          <label for="firstname">Họ và tên</label>
+                          <label htmlFor="firstname">Họ và tên</label>
                           <input
                             id="firstname"
                             type="text"
@@ -147,7 +147,7 @@ const Contact = () => {
 
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label for="email">Email</label>
+                          <label htmlFor="email">Email</label>
                           <input
                             id="email"
                             type="text"
@@ -157,7 +157,7 @@ const Contact = () => {
                       </div>
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label for="subject">Tiêu đề</label>
+                          <label htmlFor="subject">Tiêu đề</label>
                           <input
                             id="subject"
                             type="text"
@@ -167,7 +167,7 @@ const Contact = () => {
                       </div>
                       <div className="col-md-12">
                         <div className="form-group">
-                          <label for="message">Nội dung</label>
+                          <label htmlFor="message">Nội dung</label>
                           <textarea
                             id="message"
                             className="form-control"

@@ -1,6 +1,6 @@
 .navbar {
   border-bottom: 0px solid #e6e6e6;
-  background: linear-gradient(to right, #be0000, #ff8800);
+  background: linear-gradient(to right, #dc3545, #bd9dea);
 
   .container {
     .logo {
@@ -14,26 +14,35 @@
         justify-content: center;
         align-items: center;
         border: none;
+        border-radius: 50px;
+        padding-right: 2px;
 
         #input-search {
+          width: 0;
+          text-indent: 16px;
+          padding: 0 !important;
           padding-left: 10px;
           border-radius: 30px 0 0 30px !important;
           height: 28.4px;
           border: none;
-          border-radius: 5px 0 0 5px;
+          // border-radius: 5px 0 0 5px;
           outline: none;
         }
 
         #btn-search {
-          background-color: #fff;
+          cursor: pointer;
+          border-radius: inherit;
+          background-color: #bd9dea;
           color: #000;
           height: 28.4px;
-          width: 40.4px;
-          display: flex;
-          align-items: center;
-          border-radius: 0 30px 30px 0;
-          margin-right: 10px;
         }
+      }
+      .input-form:hover {
+        background: #fff;
+      }
+
+      .input-form:hover #input-search {
+        width: 200px;
       }
     }
 
@@ -145,10 +154,10 @@
   }
 }
 
-.dropdown-menu {
-  min-width: 10rem;
-  padding: 0;
-  margin: 0.125rem 0 0;
+.dropdown-menu.menu-product {
+  // padding: 0;
+  // margin: 0.125rem 0 0;
+  min-width: 12rem;
   font-size: 0.9rem;
   color: #212529;
   background-color: #fff;

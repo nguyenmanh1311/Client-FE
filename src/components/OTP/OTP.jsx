@@ -1,44 +1,54 @@
-import { useState } from "react";
-import CountDownAnimation from "./CountDownAnimation";
-import GenerateOTP from "./GenerateOTP";
+import { useState, useContext, useEffect } from "react";
 import InputOTP from "./InputOTP";
 import "./OTP.scss";
 import Swal from "sweetalert2";
+import { useDataContext } from "../../context/DataProvider";
+import { AuthService } from "../../services/auth.service";
+import { useNavigate } from "react-router-dom";
 
 const OTP = () => {
-  const [orgOTPParent, setOrgOTPParent] = useState("");
+  // const [orgOTPParent, setOrgOTPParent] = useState("");
   const [userOTPParent, setUserOTPParent] = useState("");
+  const [newPasswordParent, setNewPasswordParent] = useState("");
+  const [newPasswordConfirmParent, setNewPasswordConfirmParent] = useState("");
   const [isDisableBtn, setIsDisableBtn] = useState(false);
+  const { phoneForgetPass } = useDataContext();
+
+  const navigate = useNavigate;
 
   const handleSubmitOTP = () => {
-    if (!orgOTPParent) {
-      Swal.fire("Thông báo", "Vui lòng nhập OTP", "warning");
-      return;
-    }
     if (!userOTPParent) {
       Swal.fire("Thông báo", "Vui lòng nhập OTP", "warning");
       return;
     }
 
-    if (+orgOTPParent === +userOTPParent) {
-      Swal.fire("Thông báo", "Mã OTP hợp lệ", "success");
-      // setInterval(() => {
-      //   navigate("/change-password");
-      // }, 1000);
-    } else {
-      Swal.fire("Thông báo", "Mã OTP không đúng", "error");
-    }
+    const data = {
+      username: phoneForgetPass,
+      otp: userOTPParent,
+      password: newPasswordParent,
+    };
+
+    AuthService.confirmPassword(data)
+      .then((response) => {
+        if (response.data.status_code === 200) {
+          Swal.fire("Thông báo", "Khôi phục mật khẩu thành công", "success");
+          navigate("/login");
+        }
+      })
+      .catch(function (error) {});
   };
 
   return (
     <div className="otp-parent-container">
       <div className="form-box">
-        <GenerateOTP setOrgOTPParent={setOrgOTPParent} />
+        {/* <GenerateOTP setOrgOTPParent={setOrgOTPParent} /> */}
         <InputOTP
           setUserOTPParent={setUserOTPParent}
           handleSubmitOTP={handleSubmitOTP}
           isDisableBtn={isDisableBtn}
           setIsDisableBtn={setIsDisableBtn}
+          setNewPasswordParent={setNewPasswordParent}
+          setNewPasswordConfirmParent={setNewPasswordConfirmParent}
         />
       </div>
       <div>

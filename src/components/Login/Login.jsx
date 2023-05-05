@@ -1,10 +1,17 @@
-import React, { useRef, useState } from "react";
+import React, {
+  useRef,
+  useState,
+  useContext,
+  createContext,
+  useEffect,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo/baloshop-w.png";
 import { AuthService } from "../../services/auth.service";
 import "../Login/Login.scss";
-import swal2 from "sweetalert2";
 import OTP from "../OTP/OTP";
+import Swal from "sweetalert2";
+import { useDataContext } from "../../context/DataProvider";
 
 const Login = () => {
   const loginRef = useRef(null);
@@ -12,36 +19,26 @@ const Login = () => {
   const forgetPasswordRef = useRef(null);
   const btnRef = useRef(null);
 
+  // Login
   const [usernameLogin, setUsernameLogin] = useState("");
   const [passwordLogin, setPasswordLogin] = useState("");
+
+  // Register
   const [phone, setPhone] = useState("");
   const [passwordRegister, setPasswordRegister] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [emailForgetPW, setEmailForgetPW] = useState("");
   const [email, setEmail] = useState("");
+  const [fullname, setFullname] = useState("");
+
+  // DataContext
+  const { phoneForgetPass, setPhoneForgetPass } = useDataContext();
 
   const [isChecked, setIsChecked] = useState(false);
   const [isHide, setHide] = useState(true);
 
   const navigate = useNavigate();
-  const loginOnclick = async () => {
-    await AuthService.login(usernameLogin, passwordLogin).then((response) => {
-      if (
-        response.status === "UNAUTHORIZED" ||
-        response.status === "BAD_REQUEST"
-      ) {
-        swal2.fire(
-          "Thông báo",
-          "Thông tin đăng nhập không chính xác!",
-          "warning"
-        );
-      }
-      if (!response.data.enable) {
-        {
-          localStorage.clear();
-          swal2.fire("Thông báo", "Tài khoản đã dừng hoạt động!", "error");
-        }
-      }
+  const loginOnclick = () => {
+    AuthService.login(usernameLogin, passwordLogin).then(() => {
       if (localStorage.getItem("accessToken")) {
         navigate("/");
       }
@@ -50,21 +47,14 @@ const Login = () => {
 
   const registerOnClick = () => {
     if (isChecked) {
-      AuthService.register(
-        phone,
-        passwordRegister,
-        confirmPassword,
-        email
-      ).then((res) => {
-        if (res.status === "OK") {
-          swal2.fire("Thông báo", res.message, "success");
-          navigate("/login");
-        } else {
-          swal2.fire("Thông báo", res.message, "error");
-        }
-      });
+      AuthService.register(phone, email, passwordRegister, fullname);
+      setPhone("");
+      setEmail("");
+      setPasswordRegister("");
+      setConfirmPassword("");
+      setFullname("");
     } else {
-      swal2.fire("Thông báo", "Bạn phải đồng ý với điều khoản", "warning");
+      Swal.fire("Thông báo", "Bạn phải đồng ý với điều khoản", "warning");
     }
   };
   const agree = () => {
@@ -72,25 +62,25 @@ const Login = () => {
   };
 
   const register = () => {
-    registerRef.current.style.left = "50px";
+    registerRef.current.style.left = "85px";
     loginRef.current.style.left = "450px";
     btnRef.current.style.left = "0";
   };
   const login = () => {
-    loginRef.current.style.left = "50px";
+    loginRef.current.style.left = "85px";
     registerRef.current.style.left = "-400px";
     btnRef.current.style.left = "110px";
   };
 
   const fogetPassword = () => {
     setHide(false);
-    forgetPasswordRef.current.style.left = "50px";
+    forgetPasswordRef.current.style.left = "85px";
     loginRef.current.style.left = "-400px";
     registerRef.current.style.left = "-850px";
   };
 
   const backLogin = async () => {
-    loginRef.current.style.left = "50px";
+    loginRef.current.style.left = "85px";
     registerRef.current.style.left = "-400px";
     forgetPasswordRef.current.style.left = "450px";
     await setHide(true);
@@ -98,11 +88,39 @@ const Login = () => {
   };
 
   const otp = () => {
-    navigate("/otp");
+    AuthService.resetPassword(phoneForgetPass)
+      .then((response) => {
+        if (response.data.status_code === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "Thông báo",
+            text: "Đã gửi OTP, vui lòng kiểm tra email của bạn",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+
+          setTimeout(() => {
+            navigate("/otp");
+          }, 1500);
+        }
+      })
+      .catch(function (error) {
+        if (error.response.data.status_code === 409) {
+          Swal.fire(
+            "Thông báo",
+            "OTP đã được gửi, vui lòng đợi 1 phút sau để gửi lại",
+            "error"
+          );
+        }
+
+        if (error.response.data.status_code === 404) {
+          Swal.fire("Thông báo", "Số điện thoại không hợp lệ", "error");
+        }
+      });
   };
 
   return (
-    <div>
+    <>
       <div className="hero">
         <div className="form-box">
           <div className="social-icons">
@@ -174,6 +192,7 @@ const Login = () => {
               onChange={(event) => {
                 setPhone(event.target.value);
               }}
+              value={phone}
             />
             <input
               type="email"
@@ -183,6 +202,7 @@ const Login = () => {
               onChange={(event) => {
                 setEmail(event.target.value);
               }}
+              value={email}
             />
             <input
               type="password"
@@ -192,6 +212,7 @@ const Login = () => {
               onChange={(event) => {
                 setPasswordRegister(event.target.value);
               }}
+              value={passwordRegister}
             />
             <input
               type="password"
@@ -201,6 +222,17 @@ const Login = () => {
               onChange={(event) => {
                 setConfirmPassword(event.target.value);
               }}
+              value={confirmPassword}
+            />
+            <input
+              type="fullname"
+              className="input-field"
+              placeholder="Nhập họ tên"
+              required
+              onChange={(event) => {
+                setFullname(event.target.value);
+              }}
+              value={fullname}
             />
 
             <div className="d-flex align-items-center" onChange={() => agree()}>
@@ -221,17 +253,14 @@ const Login = () => {
             <input
               type="text"
               className="input-field"
-              placeholder="Nhập email "
+              placeholder="Nhập số điện thoại"
               required
               onChange={(event) => {
-                setEmailForgetPW(event.target.value);
+                setPhoneForgetPass(event.target.value);
               }}
             />
-            <br />
-            <br />
-
             <div className="submit-btn" onClick={() => otp()}>
-              Tiếp tục
+              Xác nhận{" "}
             </div>
 
             <a
@@ -282,7 +311,7 @@ const Login = () => {
           </g>
         </svg>
       </div>
-    </div>
+    </>
   );
 };
 

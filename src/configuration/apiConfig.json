@@ -1,4 +1,5 @@
 {
   "application": "Spring Boot",
-  "baseUrlApi": "http://localhost:8080"
+  "baseUrlApiAuth": "http://localhost:5100/v1",
+  "baseUrlApiMain": "http://localhost:5028/v1"
 }

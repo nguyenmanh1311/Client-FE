@@ -1,25 +1,20 @@
 import ReactPaginate from "react-paginate";
-import { useState } from "react";
 import ItemPerPage from "./ItemPerPage";
+import { useDataContext } from "../../context/DataProvider";
+import "./Pagination.scss";
 
-const Pagination = ({ itemsPerPage, allProduct }) => {
-  const [itemOffset, setItemOffset] = useState(0);
-
-  const endOffset = itemOffset + itemsPerPage;
-  const currentItems = allProduct.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(allProduct.length / itemsPerPage);
+const Pagination = ({ pageCount, productData }) => {
+  const { setCurrentPageNumber } = useDataContext();
 
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % allProduct.length;
-
-    setItemOffset(newOffset);
+    setCurrentPageNumber(event.selected + 1);
   };
   return (
     <>
-      <ItemPerPage currentItems={currentItems} />
-      {allProduct.length > 8 && (
+      <ItemPerPage currentItems={productData} />
+      {pageCount > 1 && (
         <ReactPaginate
-          className="pagination-item"
+          className="pagination-item "
           breakLabel="..."
           nextLabel="►"
           onPageChange={handlePageClick}

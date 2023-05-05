@@ -1,54 +1,49 @@
 import axios from "axios";
 import configAPI from "../configuration/apiConfig.json";
+import { axiosInstance } from "../configuration/axios.config";
 
-const addToCart = (cartDetail) => {
-  return axios
-    .post(configAPI.baseUrlApi + "/api/v1/cartdetail", cartDetail)
+const addToCart = (data) => {
+  return axiosInstance
+    .post(configAPI.baseUrlApiMain + "/cart", data)
     .then((res) => {
       return res.data;
     });
 };
 
-const getCartId = (id) => {
-  return axios
-    .get(`${configAPI.baseUrlApi}/api/v1/cart/user/${id}`)
-    .then((res) => {
-      return res.data;
-    });
+const getCart = () => {
+  return axiosInstance.get(configAPI.baseUrlApiMain + "/cart").then((res) => {
+    return res.data;
+  });
 };
 
 const getAllCartDetailByCartID = (id) => {
-  return axios
-    .get(`${configAPI.baseUrlApi}/api/v1/cartdetail/${id}`)
+  return axiosInstance
+    .get(configAPI.baseUrlApiMain + `/cart/${id}`)
     .then((res) => {
       return res.data;
     });
 };
 
-const deleteCartDetailById = (id) => {
-  return axios
-    .delete(`${configAPI.baseUrlApi}/api/v1/cartdetail/${id}`)
+const deleteCartDetailById = (cart_id) => {
+  return axiosInstance
+    .delete(`${configAPI.baseUrlApiMain}/cart/${cart_id}`)
     .then((res) => {
       return res.data;
     });
 };
 
-const updateQuantity = (data) => {
-  return axios
-    .put(`${configAPI.baseUrlApi}/api/v1/cartdetail`, data)
+const updateQuantity = (cart_id, data) => {
+  return axiosInstance
+    .patch(`${configAPI.baseUrlApiMain}/cart/${cart_id}`, data)
     .then((res) => {
       return res.data;
     });
-};
-const calTotalPriceCart = (id) => {
-  return axios.get(`${configAPI.baseUrlApi}/api/v1/cart/cal/${id}`);
 };
 
 export const CartService = {
   addToCart,
-  getCartId,
+  getCart,
   getAllCartDetailByCartID,
   deleteCartDetailById,
   updateQuantity,
-  calTotalPriceCart,
 };

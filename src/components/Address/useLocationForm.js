@@ -61,19 +61,19 @@ async function fetchLocationOptions(fetchType, locationId) {
 
 async function fetchInitialData(addressId) {
   let dataAddress = (await AddressService.getAddressByID(addressId)).data;
-  const { provinceId, districtId, wardId } = dataAddress;
+  const { province_id, district_id, ward_id } = dataAddress;
   const [cities, districts, wards] = await Promise.all([
     fetchLocationOptions(FETCH_TYPES.CITIES),
-    fetchLocationOptions(FETCH_TYPES.DISTRICTS, provinceId),
-    fetchLocationOptions(FETCH_TYPES.WARDS, districtId),
+    fetchLocationOptions(FETCH_TYPES.DISTRICTS, province_id),
+    fetchLocationOptions(FETCH_TYPES.WARDS, district_id),
   ]);
   return {
     cityOptions: cities,
     districtOptions: districts,
     wardOptions: wards,
-    selectedCity: cities.find((c) => c.value === provinceId),
-    selectedDistrict: districts.find((d) => d.value === districtId),
-    selectedWard: wards.find((w) => w.value === wardId),
+    selectedCity: cities.find((c) => c.value === province_id),
+    selectedDistrict: districts.find((d) => d.value === district_id),
+    selectedWard: wards.find((w) => w.value === String(ward_id)),
   };
 }
 

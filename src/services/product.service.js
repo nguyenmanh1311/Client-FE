@@ -1,13 +1,15 @@
-import axios from "axios";
 import configAPI from "../configuration/apiConfig.json";
+import { axiosInstance } from "../configuration/axios.config";
 
-const getAllProduct = () => {
-  return axios.get(configAPI.baseUrlApi + "/api/v1/product").then((res) => {
-    return res.data;
-  });
+const getAllProduct = (data) => {
+  return axiosInstance
+    .get(configAPI.baseUrlApiMain + "/product", { params: data })
+    .then((res) => {
+      return res.data;
+    });
 };
 const getAllTopSelling = () => {
-  return axios
+  return axiosInstance
     .get(configAPI.baseUrlApi + "/api/v1/product/topselling")
     .then((res) => {
       return res.data;
@@ -15,13 +17,15 @@ const getAllTopSelling = () => {
 };
 
 const get10ProductFeature = () => {
-  return axios.get(configAPI.baseUrlApi + "/api/v1/product").then((res) => {
-    return res.data;
-  });
+  return axiosInstance
+    .get(configAPI.baseUrlApi + "/api/v1/product")
+    .then((res) => {
+      return res.data;
+    });
 };
 
 const get8ProductNew = () => {
-  return axios
+  return axiosInstance
     .get(configAPI.baseUrlApi + "/api/v1/product/top8new")
     .then((res) => {
       return res.data;
@@ -29,56 +33,31 @@ const get8ProductNew = () => {
 };
 
 const getProductByName = (name) => {
-  return axios
-    .get(configAPI.baseUrlApi + "/api/v1/product/search?input=" + name)
+  return axiosInstance
+    .get(configAPI.baseUrlApiMain + "/product/", { params: name })
     .then((res) => {
       return res.data;
     });
 };
 
 const getProductSameCate = () => {
-  return axios.get(configAPI.baseUrlApi + "/api/v1/product").then((res) => {
-    return res.data;
-  });
+  return axiosInstance
+    .get(configAPI.baseUrlApi + "/api/v1/product")
+    .then((res) => {
+      return res.data;
+    });
 };
 
 const getProductById = (id) => {
-  return axios
-    .get(`${configAPI.baseUrlApi}/api/v1/product/${id}`)
-    .then((res) => {
-      return res.data;
-    });
-};
-
-const getProductByBrand = (id) => {
-  return axios
-    .get(`${configAPI.baseUrlApi}/api/v1/product/branch/${id}`)
-    .then((res) => {
-      return res.data;
-    });
-};
-
-const getProductByCategory = (id) => {
-  return axios
-    .get(`${configAPI.baseUrlApi}/api/v1/product/cate/${id}`)
-    .then((res) => {
-      return res.data;
-    });
-};
-
-const getProductByCateIdAndBrandId = (input) => {
-  return axios
-    .post(
-      `${configAPI.baseUrlApi}/api/v1/product/search/bycateandbranch`,
-      input
-    )
+  return axiosInstance
+    .get(`${configAPI.baseUrlApiMain}/product/${id}`)
     .then((res) => {
       return res.data;
     });
 };
 
 const get4RelateProduct = (idProduct) => {
-  return axios
+  return axiosInstance
     .get(`${configAPI.baseUrlApi}/api/v1/product/top4related/${idProduct}`)
     .then((res) => {
       return res.data;
@@ -86,7 +65,7 @@ const get4RelateProduct = (idProduct) => {
 };
 
 const getProductByFilter = (data) => {
-  return axios
+  return axiosInstance
     .post(`${configAPI.baseUrlApi}/api/v1/product/filter`, data)
     .then((response) => {
       return response.data;
@@ -98,11 +77,8 @@ export const ProductService = {
   get8ProductNew,
   getProductById,
   getProductSameCate,
-  getProductByBrand,
-  getProductByCategory,
   get10ProductFeature,
   getProductByName,
-  getProductByCateIdAndBrandId,
   get4RelateProduct,
   getAllTopSelling,
   getProductByFilter,

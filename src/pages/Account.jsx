@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/Style.scss";
 
 import Footer from "../components/Footer/Footer";
@@ -14,27 +14,97 @@ const Account = () => {
   const [oldPass, setOldPasss] = useState("");
   const [newPass, setNewPasss] = useState("");
   const [confirmPass, setConfirmPasss] = useState("");
-  const userId = JSON.parse(localStorage.getItem("userId"));
+
+  const [selectedGender, setselectedGender] = useState();
+  const [fullname, setFullname] = useState();
+  const [birthday, setBirthday] = useState();
+
+  const [user, setUser] = useState([]);
+  const [changed, setChanged] = useState(true);
+  let genderFetch;
+
+  // fetch data
+  const [fetchedDate, setFetchedDate] = useState(null);
+  const [dateInput, setDateInput] = useState(null);
+
   const navigate = useNavigate();
 
-  const saveOnClick = () => {
+  const savePassOnClick = () => {
     if (newPass === confirmPass) {
-      AuthService.changePassword(userId, oldPass, newPass).then((res) => {
-        if (res.status === "OK") {
-          swal.fire("Thông báo", "Đổi mật khẩu thành công", "success");
-          window.location.reload();
-        } else {
-          swal.fire("Thông báo", "Mật khẩu cũ không chính xác", "error");
-        }
-      });
+      AuthService.changePassword(oldPass, newPass)
+        .then((response) => {
+          if (response.data.status_code === 200) {
+            swal.fire("Thông báo", "Đổi mật khẩu thành công", "success");
+          }
+        })
+        .catch(() => {
+          swal.fire("Thông báo", "Mật khẩu không đúng", "error");
+        });
     } else {
-      swal.fire("Thông báo", "Nhập lại mật khẩu không chính xác", "warning");
+      swal.fire("Thông báo", "Mật khẩu không trùng khớp", "warning");
     }
+  };
+
+  const saveInfoOnClick = () => {
+    const data = {
+      fullname: fullname,
+      date_of_birth: birthday,
+      gender: Number(selectedGender),
+    };
+
+    AuthService.updateProfile(data)
+      .then((response) => {
+        if (response.data.status_code === 200) {
+          swal.fire(
+            "Thông báo",
+            "Cập nhật thông tin cá nhân thành công",
+            "success"
+          );
+          setChanged(!changed);
+        }
+      })
+      .catch(() => {
+        swal.fire("Thông báo", "Cập nhật thông tin cá nhân thất bại", "error");
+      });
   };
 
   if (localStorage.getItem("accessToken") === null) {
     navigate("/login");
   }
+
+  console.log(genderFetch);
+
+  const handleFetchBirthday = (fetchedDateStr) => {
+    const parsedDate = new Date(fetchedDateStr);
+    const value =
+      parsedDate.getFullYear() +
+      "-" +
+      (parsedDate.getMonth() < 9
+        ? "0" + String(parsedDate.getMonth() + 1)
+        : parsedDate.getMonth() + 1) +
+      "-" +
+      parsedDate.getDate();
+    setFetchedDate(value);
+  };
+
+  useEffect(() => {
+    const fetchUser = () => {
+      AuthService.getProfile().then((res) => {
+        if (res.status_code === 200) {
+          setUser(res.data);
+          console.log(res.data.gender);
+          const fetchedDateStr = res.data.date_of_birth;
+          handleFetchBirthday(fetchedDateStr);
+          genderFetch = res.data.gender;
+        }
+      });
+    };
+
+    fetchUser();
+    if (fetchedDate) {
+      setDateInput(fetchedDate);
+    }
+  }, [changed, fetchedDate]);
 
   return (
     <>
@@ -61,7 +131,7 @@ const Account = () => {
                   <h1>Tài khoản của bạn</h1>
                   <h3 className="mt-5">Thông tin chi tiết</h3>
 
-                  <form>
+                  <div>
                     <div className="row">
                       <div className="col-md-6">
                         <div className="form-group">
@@ -70,6 +140,10 @@ const Account = () => {
                             id="fullname"
                             type="text"
                             className="form-control"
+                            defaultValue={user.fullname}
+                            onChange={(e) => {
+                              setFullname(e.target.value);
+                            }}
                           />
                         </div>
                       </div>
@@ -77,24 +151,62 @@ const Account = () => {
                     <div className="row">
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label htmlFor="phone">Số điện thoại</label>
-                          <input
-                            id="phone"
-                            type="text"
-                            className="form-control"
-                          />
+                          <label htmlFor="birthday">Ngày sinh</label>
+                          <div className="d-flex justify-content-between">
+                            <input
+                              id="birthday"
+                              type="date"
+                              value={dateInput || ""}
+                              onChange={(e) => setBirthday(e.target.value)}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="row">
+                    <div className="row gender-container">
                       <div className="col-md-6">
-                        <div className="form-group">
-                          <label htmlFor="email">Email</label>
-                          <input
-                            id="email"
-                            type="text"
-                            className="form-control"
-                          />
+                        <div className="form-group ">
+                          <label>Giới tính</label>
+                          <br />
+                          <label className="choose">
+                            Nam
+                            <input
+                              type="radio"
+                              name="radio"
+                              value="1"
+                              defaultChecked={genderFetch === 1}
+                              onChange={(e) => {
+                                setselectedGender(e.target.value);
+                              }}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
+                          <label className="choose">
+                            Nữ
+                            <input
+                              type="radio"
+                              name="radio"
+                              value="2"
+                              defaultChecked={genderFetch === 2}
+                              onChange={(e) => {
+                                setselectedGender(e.target.value);
+                              }}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
+                          <label className="choose">
+                            Khác
+                            <input
+                              type="radio"
+                              name="radio"
+                              value="3"
+                              defaultChecked={genderFetch === 3}
+                              onChange={(e) => {
+                                setselectedGender(e.target.value);
+                              }}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
                         </div>
                       </div>
                     </div>
@@ -103,6 +215,7 @@ const Account = () => {
                       <button
                         type="submit"
                         className="btn btn-success gradient"
+                        onClick={saveInfoOnClick}
                       >
                         <RiSave3Fill
                           className="fa fa-save"
@@ -111,7 +224,7 @@ const Account = () => {
                         Lưu thay đổi
                       </button>
                     </div>
-                  </form>
+                  </div>
 
                   <br />
                   <hr />
@@ -173,7 +286,7 @@ const Account = () => {
                       <button
                         type="submit"
                         className="btn btn-success gradient"
-                        onClick={saveOnClick}
+                        onClick={savePassOnClick}
                       >
                         <RiSave3Fill
                           className="fa fa-save"

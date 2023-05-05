@@ -1,10 +1,12 @@
-import axios from "axios";
 import configAPI from "../configuration/apiConfig.json";
+import { axiosInstance } from "../configuration/axios.config";
 
 const getAllCategory = () => {
-  return axios.get(configAPI.baseUrlApi + "/api/v1/category").then((res) => {
-    return res.data;
-  });
+  return axiosInstance
+    .get(configAPI.baseUrlApiMain + "/category")
+    .then((res) => {
+      return res.data;
+    });
 };
 
 export const CategoryService = {

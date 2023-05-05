@@ -11,7 +11,7 @@ const GenerateOTP = (props) => {
   return (
     <div className="generate-otp-container">
       <button onClick={() => handleClickBtn()}>Nhận mã OTP</button>
-      <div className="title">Mã OTP là: {orgOTP}</div>
+      {/* <div className="title">Mã OTP là: {orgOTP}</div> */}
     </div>
   );
 };

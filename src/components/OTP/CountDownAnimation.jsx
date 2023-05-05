@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useState, useImperativeHandle } from "react";
 import "./CountDownAnimation.scss";
 
 const CountDownAnimation = forwardRef((props, ref) => {
-  const TIME_LIMIT = 20;
+  const TIME_LIMIT = 60;
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const FULL_DASH_ARRAY = 283;
   const WARNING_THRESHOLD = 10;

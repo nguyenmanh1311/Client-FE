@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/Style.scss";
 import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
+import { GlobalUtil } from "../utils/GlobalUtil";
 
 import { FaTrashAlt } from "react-icons/fa";
 import { GrNext } from "react-icons/gr";
@@ -14,51 +15,41 @@ import Swal from "sweetalert2";
 import { CartService } from "../services/cart.service";
 
 const Basket = () => {
-  const commas = (str) => {
-    return str.replace(/.(?=(?:.{3})+$)/g, "$&.");
-  };
   const [cartDetail, setCartDetail] = useState([]);
   const [statusCart, setStatusCart] = useState(true);
 
+  let data = {};
   let total = 0;
   const navigate = useNavigate();
 
+  const fetchCart = () => {
+    CartService.getCart().then((res) => {
+      if (res.total_count === 0) {
+        setStatusCart(false);
+      } else {
+        setCartDetail(res.data ?? []);
+      }
+    });
+  };
+
+  if (localStorage.getItem("accessToken") == null) {
+    navigate("/login");
+  }
+
   useEffect(() => {
-    const userId = JSON.parse(localStorage.getItem("userId"));
-    let isFetched = true;
-
-    if (localStorage.getItem("accessToken") == null) {
-      navigate("/login");
-    }
-
-    const fetchCart = () => {
-      CartService.getCartId(userId).then((res) => {
-        if (isFetched) {
-          CartService.calTotalPriceCart(res.data.id);
-          CartService.getAllCartDetailByCartID(res.data.id).then((res) => {
-            if (isFetched) {
-              if (res.data == null) {
-                setStatusCart(false);
-              } else {
-                setCartDetail(res.data ?? []);
-              }
-            }
-          });
-        }
-      });
-    };
     fetchCart();
 
-    return () => {
-      isFetched = false;
-    };
+    return () => {};
   }, []);
 
-  let data = {};
   const onChangeQuantity = (value) => {
-    const dataUpdate = { id: value.id, quantity: value.quantity };
-    CartService.updateQuantity(dataUpdate);
-    window.location.reload();
+    const dataUpdate = { quantity: Number(value.quantity) };
+    const id = value.id;
+    if (dataUpdate.quantity > 0) {
+      CartService.updateQuantity(id, dataUpdate).then(() => {
+        fetchCart();
+      });
+    }
   };
 
   return (
@@ -136,25 +127,26 @@ const Basket = () => {
                         <table className="table">
                           <thead>
                             <tr>
-                              <th colSpan="2">Tên sản phẩm</th>
+                              <th></th>
+                              <th>Tên sản phẩm</th>
                               <th>Số lượng</th>
                               <th>Đơn giá</th>
-                              <th>Khuyến mãi</th>
                               <th>Tổng</th>
                               <th></th>
                             </tr>
                           </thead>
                           <tbody>
                             {cartDetail.map((item) => {
-                              total = total + item.price * item.quantity;
+                              total =
+                                total + item.product.price * item.quantity;
                               return (
-                                <tr key={item.id}>
+                                <tr key={item.product_id}>
                                   <td>
                                     <Link to={`/product-detail`}>
                                       <img
                                         src={
-                                          "http://localhost:8080/api/v1/image_product/" +
-                                          item.image
+                                          "https://" +
+                                          item?.product?.product_images[0].uri
                                         }
                                         alt=""
                                       />
@@ -162,13 +154,13 @@ const Basket = () => {
                                   </td>
                                   <td>
                                     <Link to={`/product-detail`}>
-                                      {item.name}
+                                      {item?.product?.name}
                                     </Link>
                                   </td>
                                   <td>
                                     <input
                                       type="number"
-                                      defaultValue={item.quantity}
+                                      defaultValue={item?.quantity}
                                       min="1"
                                       className="form-control"
                                       onChange={(e) =>
@@ -176,21 +168,21 @@ const Basket = () => {
                                           (data = {
                                             id: item.id,
                                             quantity: e.target.value,
-                                            price: item.price,
                                           })
                                         )
                                       }
                                     />
                                   </td>
                                   <td>
-                                    {commas(Number(item.price) + "") + "₫"}
+                                    {GlobalUtil.commas(
+                                      Number(item?.product?.price) + ""
+                                    ) + "₫"}
                                   </td>
-                                  <td>0</td>
                                   <td>
                                     {" "}
-                                    {commas(
-                                      Number(item.price) *
-                                        Number(item.quantity) +
+                                    {GlobalUtil.commas(
+                                      Number(item?.product?.price) *
+                                        Number(item?.quantity) +
                                         ""
                                     ) + "₫"}
                                   </td>
@@ -217,8 +209,11 @@ const Basket = () => {
                                             );
                                             CartService.deleteCartDetailById(
                                               item.id
-                                            ).then((res) => {});
-                                            window.location.reload();
+                                            ).then((res) => {
+                                              if (res.status_code === 200) {
+                                                window.location.reload();
+                                              }
+                                            });
                                           } else if (result.isDenied) {
                                             Swal.fire(
                                               "Sản phẩm chưa được xóa",
@@ -242,7 +237,9 @@ const Basket = () => {
                             {total !== 0 && (
                               <tr>
                                 <th colSpan="5">Tổng tiền</th>
-                                <th colSpan="2">{commas(total + "") + "₫"}</th>
+                                <th colSpan="2">
+                                  {GlobalUtil.commas(total + "") + "₫"}
+                                </th>
                               </tr>
                             )}
                           </tfoot>
@@ -251,7 +248,7 @@ const Basket = () => {
                       <div className="d-flex justify-content-between flex-column flex-lg-row">
                         <div className="left">
                           <Link
-                            to={`/collections`}
+                            to={`/product`}
                             className="btn btn-outline-secondary"
                             style={{ fontSize: "14px" }}
                           >

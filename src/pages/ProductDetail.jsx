@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "../styles/Style.scss";
 import Footer from "../components/Footer/Footer";
@@ -9,30 +9,50 @@ import { ProductService } from "../services/product.service";
 import { CartService } from "../services/cart.service";
 import { ImageService } from "../services/image.service";
 
+import StarsRating from "react-star-rate";
+import { ReactionBarSelector } from "@charkour/react-reactions";
+
 import { FaShoppingCart } from "react-icons/fa";
 import { AiTwotoneHeart } from "react-icons/ai";
 import { BsFacebook, BsTwitter } from "react-icons/bs";
 import { ImGooglePlus } from "react-icons/im";
 import { SiGmail } from "react-icons/si";
 
-import Carousel from "nuka-carousel/lib/carousel";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinus, faPlus, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+
 import Swal from "sweetalert2";
+import { RatingService } from "../services/rating.service";
+import { useDataContext } from "../context/DataProvider";
+import Comment from "../components/Comment/Comment";
+import { GlobalUtil } from "../utils/GlobalUtil";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const [imageProduct, setImageProduct] = useState([]);
+
   const [product, setProduct] = useState([]);
   const [productRelattionship, setProductRelationship] = useState([]);
+  const [currentImgUp, setCurrentImgUp] = useState("");
+  let [count, setCount] = useState(1);
+  const [rating, setRating] = useState([]);
+
   const quantityRef = useRef();
   const navigate = useNavigate();
 
-  const commas = (str) => {
-    return str.replace(/.(?=(?:.{3})+$)/g, "$&.");
+  const incrementCount = () => {
+    count = count + 1;
+    setCount(count);
+  };
+  const decrementCount = () => {
+    if (count > 0) {
+      count = count - 1;
+      setCount(count);
+    }
   };
 
   const AddToCart = () => {
-    const userId = JSON.parse(localStorage.getItem("userId"));
-    if (userId === null) {
+    const accessToken = JSON.parse(localStorage.getItem("accessToken"));
+    if (accessToken === null) {
       Swal.fire({
         title: "🔊 Bạn phải đăng nhập để thêm sản phẩm vào giỏ hàng!!!",
         showDenyButton: true,
@@ -50,21 +70,18 @@ const ProductDetail = () => {
         }
       });
     } else {
-      CartService.getCartId(userId).then((res) => {
-        const data = {
-          cartId: res.data.id,
-          productId: id,
-          quantity: Number(quantityRef.current.value),
-        };
-        CartService.addToCart(data).then((res) => {
-          if (res.status === "OK") {
-            Swal.fire(
-              "Thông báo",
-              "Thêm sản phẩm vào giỏ hàng thành công!",
-              "success"
-            );
-          }
-        });
+      const data = {
+        product_id: id,
+        quantity: Number(quantityRef.current.value),
+      };
+      CartService.addToCart(data).then((res) => {
+        if (res.status_code === 200) {
+          Swal.fire(
+            "Thông báo",
+            "Thêm sản phẩm vào giỏ hàng thành công!",
+            "success"
+          );
+        }
       });
     }
   };
@@ -75,14 +92,7 @@ const ProductDetail = () => {
       ProductService.getProductById(id).then((res) => {
         if (isFetched) {
           setProduct(res.data);
-        }
-      });
-    };
-
-    const fetchImage = () => {
-      ImageService.getAllImageByProductId(id).then((res) => {
-        if (isFetched) {
-          setImageProduct(res.data);
+          setCurrentImgUp(`https://${res.data.product_images[0].uri}`);
         }
       });
     };
@@ -95,14 +105,26 @@ const ProductDetail = () => {
       });
     };
 
+    const fetchRating = () => {
+      const input = {
+        product_id: id,
+      };
+      RatingService.getAllRating(input).then((res) => {
+        if (isFetched) {
+          setRating(res.data);
+        }
+      });
+    };
+
     window.scrollTo(0, 0);
-    fetchImage();
+    fetchRating();
     fetchProductRelationship();
     fetchProduct();
     return () => {
       isFetched = false;
     };
   }, [id]);
+
   return (
     <>
       <Header />
@@ -123,7 +145,7 @@ const ProductDetail = () => {
                       <a href="#">Balo Laptop</a>
                     </li>
                     <li aria-current="page" className="breadcrumb-item active">
-                      White Blouse Armani
+                      {product.name}
                     </li>
                   </ol>
                 </nav>
@@ -131,29 +153,24 @@ const ProductDetail = () => {
               <SidebarProduct />
               <div className="col-lg-9 order-1 order-lg-2">
                 <div id="productMain" className="row">
-                  <div className="col-md-6">
-                    <Carousel
-                      renderCenterLeftControls={false}
-                      renderCenterRightControls={false}
-                      renderCenterBottomControls={true}
-                      data-slider-id="1"
-                      className="owl-carousel shop-detail-carousel"
-                    >
-                      {imageProduct.map((item) => {
+                  <div className="col-md-6 content-left">
+                    <div className="img-up">
+                      <img src={currentImgUp} className="img-fluid" />
+                    </div>
+                    <div className="img-down d-flex justify-content-between">
+                      {product?.product_images?.map((item) => {
                         return (
-                          <div className="item" key={item}>
+                          <div className="img-small" key={item.file_upload_id}>
                             <img
-                              src={
-                                "http://localhost:8080/api/v1/image_product/" +
-                                item
+                              src={"https://" + item?.uri}
+                              onClick={() =>
+                                setCurrentImgUp(`https://${item?.uri}`)
                               }
-                              alt=""
-                              className="img-fluid"
                             />
                           </div>
                         );
                       })}
-                    </Carousel>
+                    </div>
                   </div>
                   <div className="col-md-6">
                     <div className="box">
@@ -163,18 +180,35 @@ const ProductDetail = () => {
                           Bấm vào đây cuộn xuống để xem chi tiết sản phẩm.
                         </a>
                       </p>
-                      <div className="row-center">
-                        <h6 className="col-md-4">Số lượng: </h6>
+                      <div className="row-center quantity-container d-flex align-items-center justify-content-center">
+                        <div className="col-md-4 d-flex align-items-center justify-content-center">
+                          Số lượng:{" "}
+                        </div>
+                        <button className="button-quantity">
+                          <FontAwesomeIcon
+                            icon={faMinus}
+                            style={{ color: "#000000" }}
+                            onClick={() => decrementCount()}
+                          />
+                        </button>
                         <input
                           ref={quantityRef}
                           type="number"
                           defaultValue="1"
+                          value={count}
                           min={1}
-                          className="form-control col-md-2"
+                          className="col-md-2"
                         />
+                        <button className="button-quantity">
+                          <FontAwesomeIcon
+                            icon={faPlus}
+                            style={{ color: "#000000" }}
+                            onClick={() => incrementCount()}
+                          />
+                        </button>
                       </div>
                       <p className="price">
-                        {commas(Number(product.price) + "")}
+                        {GlobalUtil.commas(Number(product.price) + "₫")}
                       </p>
                       <p className="text-center buttons">
                         <button
@@ -193,12 +227,63 @@ const ProductDetail = () => {
                 </div>
                 <div id="details" className="box">
                   <div className="grid">
+                    <h1>{product.name}</h1>
                     <div className="row">
                       <div className="col-lg-6">
-                        <p>{product.description}</p>
+                        <p className="description">{product.description}</p>
                       </div>
                       <div className="col-lg-6">
-                        <p>{product.specifications}</p>
+                        <ul className="technical-data">
+                          {product.material && (
+                            <li>
+                              <strong>Chất liệu:</strong> {product.material}
+                            </li>
+                          )}
+                          {product.size && (
+                            <li>
+                              <strong>Kích thước:</strong> {product.size}
+                            </li>
+                          )}
+                          {product.compartment_number && (
+                            <li>
+                              <strong>Số ngăn:</strong>{" "}
+                              {product.compartment_number}
+                            </li>
+                          )}
+                          {product.capacity && (
+                            <li>
+                              <strong>Thể tích:</strong> {product.capacity}
+                            </li>
+                          )}
+                          {product.weight && (
+                            <li>
+                              <strong>Trọng lượng:</strong> {product.weight}
+                            </li>
+                          )}
+                          {product.color && (
+                            <li>
+                              <strong>Màu sắc:</strong> {product.color}
+                            </li>
+                          )}
+                          {product.warranty_period && (
+                            <li>
+                              <strong>Bảo hành:</strong>{" "}
+                              {product.warranty_period}
+                            </li>
+                          )}
+                          {product.laptop_size && (
+                            <li>
+                              <strong>Đựng được laptop:</strong>{" "}
+                              {product.laptop_size}
+                            </li>
+                          )}
+                          {product.water_resistance && (
+                            <li>
+                              <strong>Khả năng chống nước:</strong>{" "}
+                              {product.water_resistance}
+                            </li>
+                          )}
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -232,6 +317,12 @@ const ProductDetail = () => {
                       </a>
                     </p>
                   </div> */}
+                </div>
+
+                <div className="comment">
+                  {rating.map((item) => {
+                    return <Comment {...item} key={item.id} />;
+                  })}
                 </div>
                 <div style={{ marginBottom: "30px", marginTop: "60px" }}>
                   <h3>Sản phẩm liên quan</h3>

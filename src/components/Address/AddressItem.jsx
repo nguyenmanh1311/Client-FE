@@ -37,18 +37,18 @@ const AddressItem = (props) => {
   };
   return (
     <>
-      <div className="h-fit w-full p-2 border border-gray-500 flex hover:drop-shadow-md bg-white transition-all duration-100 m-3">
+      <div className="h-fit w-full pt-3 pb-3 border-top border-gray-500 flex hover:drop-shadow-md bg-white transition-all duration-100 ">
         <div className="row">
           <div className="col-lg-9">
             <div>
               <div className="font-weight-bold m-2">
-                {props.fullName} - {props.phone}
+                {props.fullname} - {props.phone_number}
               </div>
             </div>
             <div>
               <div className="m-2">
-                {props.addressLine}, {props.ward}, {props.district},{" "}
-                {props.province}
+                {props.address_string}, {props.ward_name}, {props.district_name}
+                , {props.province_name}
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@ const AddressItem = (props) => {
                 onClick={() => {
                   editClickHandle(props.id);
                 }}
-                style={{ fontSize: "14px" }}
+                style={{ fontSize: "20px" }}
               >
                 <AiFillEdit />
               </div>
@@ -68,7 +68,7 @@ const AddressItem = (props) => {
                 onClick={() => {
                   deleteClickHandle(props.id);
                 }}
-                style={{ fontSize: "14px" }}
+                style={{ fontSize: "20px" }}
               >
                 <MdDelete />
               </div>

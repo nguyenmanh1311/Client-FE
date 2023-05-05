@@ -35,7 +35,7 @@ const PaymentSuccess = () => {
             }}
             className="continue"
             onClick={() => {
-              navigate("/collections");
+              navigate("/product");
             }}
           >
             Tiếp tục mua hàng

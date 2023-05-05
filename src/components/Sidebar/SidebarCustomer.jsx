@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../../styles/Style.scss";
+import logo from "../../assets/images/logo/baloshop.png";
 
 import { BsListTask, BsPersonFill } from "react-icons/bs";
 import { AiFillHeart } from "react-icons/ai";
@@ -7,39 +8,64 @@ import { TbLogout } from "react-icons/tb";
 import { FaAddressBook } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
-import { UserService } from "../../services/user.service";
+import { ImageService } from "../../services/image.service";
+import { AuthService } from "../../services/auth.service";
 
 const SidebarCustomer = () => {
   const [user, setUser] = useState([]);
-  const userId = JSON.parse(localStorage.getItem("userId"));
+  const [avatar, setAvatar] = useState();
+
+  const uploadBtnRef = useRef();
+
+  const mouseEnter = () => {
+    uploadBtnRef.current.style.display = "block";
+  };
+
+  const mouseLeave = () => {
+    uploadBtnRef.current.style.display = "none";
+  };
+
+  const updateAvatar = (e) => {
+    setAvatar(e.target.files[0]);
+    const formData = new FormData();
+    formData.append("image", e.target.files[0]);
+    ImageService.uploadImage(formData).then((res) => {
+      if (res.status_code === 200) {
+        const data = { avatar: res.data.uri };
+        ImageService.uploadAvatar(data);
+      }
+    });
+  };
 
   useEffect(() => {
     const fetchUser = () => {
-      UserService.getUserByUserID(userId).then((res) => {
-        setUser(res.data);
+      AuthService.getProfile().then((res) => {
+        if (res.status_code === 200) {
+          setUser(res.data);
+        }
       });
     };
     fetchUser();
-  }, [userId]);
+  }, []);
   return (
-    <div className="sidebar-customer col-lg-3 mt-2">
+    <div className="sidebar-customer col-lg-3 mt-2 d-flex align-items-center flex-column">
       <div
-        className="rounded-circle d-flex justify-content-center"
-        id="dropdownMenuButton"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
+        className="profile-pic-div"
+        onMouseEnter={mouseEnter}
+        onMouseLeave={mouseLeave}
       >
         <img
-          src={"http://localhost:8080/api/v1/image_product/" + user.photo}
+          src={user.length === 0 ? "" : "http://" + user.avatar}
           className="rounded-circle "
-          style={{ height: "250px" }}
-          alt="Ảnh đại diện"
+          style={{ height: "180px", width: "180px" }}
         />
+        <input type="file" id="input-file" onChange={updateAvatar} />
+        <label htmlFor="input-file" id="uploadBtn" ref={uploadBtnRef}>
+          Chọn ảnh đại diện
+        </label>
       </div>
-      <div className="name">{user.fullName}</div>
-
-      <ul className="nav nav-pills ">
+      <div className="name">{user.fullname}</div>
+      <ul className="nav nav-pills d-flex align-items-center ">
         <Link to={`/all-order`} className="nav-link d-flex align-items-center">
           <BsListTask className="order fa fa-list mr-2"></BsListTask>
           Tất cả đơn hàng
