@@ -17,7 +17,16 @@ const postRating = (data) => {
     });
 };
 
+const getQuantityRating = (id) => {
+  return axiosInstance
+    .get(configAPI.baseUrlApiMain + `/product-review/products/${id}`)
+    .then((res) => {
+      return res.data;
+    });
+};
+
 export const RatingService = {
   getAllRating,
   postRating,
+  getQuantityRating,
 };

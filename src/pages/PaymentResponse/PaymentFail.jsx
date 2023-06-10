@@ -23,8 +23,8 @@ const PaymentFail = () => {
           <h2>
             <strong>Thanh toán thất bại</strong>
           </h2>
-          <p>Vui lòng kiểm tra lại thông tin.</p>
-          <div className="row">
+          {/* <p>Vui lòng kiểm tra lại thông tin.</p> */}
+          {/* <div className="row">
             <button
               className="again"
               onClick={() => {
@@ -33,7 +33,7 @@ const PaymentFail = () => {
             >
               Thanh toán lại
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
       <Footer />

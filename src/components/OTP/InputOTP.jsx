@@ -22,6 +22,8 @@ const InputOTP = (props) => {
 
   const handleConfirmOTP = () => {
     props.handleSubmitOTP();
+    props.setNewPasswordParent(newPassword);
+    props.setNewPasswordConfirmParent(newPasswordConfirm);
   };
 
   const validatePasswords = () => {
@@ -92,10 +94,8 @@ const InputOTP = (props) => {
           className="input-field"
           placeholder="Nhập mật khẩu mới"
           required
-          minLength="8"
           onChange={(event) => {
             setNewPassword(event.target.value);
-            props.setNewPasswordParent(newPassword);
           }}
           value={newPassword}
         />
@@ -109,10 +109,8 @@ const InputOTP = (props) => {
           className="input-field"
           placeholder="Nhập lại mật khẩu mới"
           required
-          minLength="8"
           onChange={(event) => {
             setNewPasswordConfirm(event.target.value);
-            props.setNewPasswordConfirmParent(newPasswordConfirm);
           }}
           value={newPasswordConfirm}
         />

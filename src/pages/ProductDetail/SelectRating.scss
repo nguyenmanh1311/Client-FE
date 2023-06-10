@@ -1,20 +1,26 @@
-#customer-orders {
+.select-rating-container {
   ul.nav-container {
     list-style-type: none;
-    padding: 0 !important;
     overflow: hidden;
-    background: rgb(255, 255, 255);
+    padding: 0 !important;
+    margin: 0 !important;
 
     li {
+      margin-right: 10px !important;
+      margin-bottom: 10px !important;
+      background: rgb(255, 255, 255);
       float: left;
+      width: 23%;
 
       a {
-        padding: 14px 16px;
+        padding: 8px 16px;
         font-size: 16px;
         display: block;
         color: black;
         text-align: center;
         text-decoration: none;
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.09);
       }
 
       a:hover {
@@ -24,7 +30,7 @@
       a:focus,
       a.active {
         color: #ee4d2d;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+        border: 1px solid rgba(0, 0, 0, 0.09);
         border-color: #ee4d2d;
       }
     }

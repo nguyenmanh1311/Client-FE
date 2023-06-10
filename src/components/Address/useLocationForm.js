@@ -24,7 +24,7 @@ async function fetchLocationOptions(fetchType, locationId) {
     url = PATHS.CITIES;
     const locations = (
       await axios.get(url, {
-        headers: { token: "60be7953-6f94-11ed-b09a-9a2a48e971b0" },
+        headers: { token: "3c8a5816-6990-11ed-be76-3233f989b8f3" },
       })
     ).data?.data;
     return locations.map(({ ProvinceID, ProvinceName }) => ({
@@ -36,7 +36,7 @@ async function fetchLocationOptions(fetchType, locationId) {
     url = PATHS.DISTRICTS + "?province_id=" + locationId;
     const locations = (
       await axios.get(url, {
-        headers: { token: "60be7953-6f94-11ed-b09a-9a2a48e971b0" },
+        headers: { token: "3c8a5816-6990-11ed-be76-3233f989b8f3" },
       })
     ).data?.data;
     return locations.map(({ DistrictID, DistrictName }) => ({
@@ -48,7 +48,7 @@ async function fetchLocationOptions(fetchType, locationId) {
     url = PATHS.WARDS + "?district_id=" + locationId;
     const locations = (
       await axios.get(url, {
-        headers: { token: "60be7953-6f94-11ed-b09a-9a2a48e971b0" },
+        headers: { token: "3c8a5816-6990-11ed-be76-3233f989b8f3" },
       })
     ).data?.data;
     return locations.map(({ WardCode, WardName }) => ({

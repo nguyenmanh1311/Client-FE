@@ -14,6 +14,7 @@ const ProductByBrand = () => {
   const { currentPageNumber, setCurrentPageNumber } = useDataContext();
   const { categories } = useDataContext();
   const { brands, setBrands } = useDataContext();
+  const { color } = useDataContext();
 
   const { minPrice } = useDataContext();
   const { maxPrice } = useDataContext();
@@ -47,6 +48,7 @@ const ProductByBrand = () => {
         page_count: 9,
         order_by: orderBy,
         page: currentPageNumber,
+        color: color.join(","),
         brand_id: brands.join(","),
         category_id: categories.join(","),
         max_price: maxPrice,
@@ -65,7 +67,16 @@ const ProductByBrand = () => {
     return () => {
       isFetched = false;
     };
-  }, [currentPageNumber, categories, brands, maxPrice, minPrice, id, orderBy]);
+  }, [
+    currentPageNumber,
+    categories,
+    brands,
+    maxPrice,
+    minPrice,
+    id,
+    orderBy,
+    color,
+  ]);
 
   return (
     <>

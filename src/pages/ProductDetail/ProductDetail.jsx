@@ -1,31 +1,25 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import "../styles/Style.scss";
-import Footer from "../components/Footer/Footer";
-import Header from "../components/Header/Header";
-import Gallery from "../components/Gallery/Gallery";
-import SidebarProduct from "../components/Sidebar/SidebarProduct";
-import { ProductService } from "../services/product.service";
-import { CartService } from "../services/cart.service";
-import { ImageService } from "../services/image.service";
+import "../../styles/Style.scss";
+import Footer from "../../components/Footer/Footer";
+import Header from "../../components/Header/Header";
+import Gallery from "../../components/Gallery/Gallery";
+import nocomment from "../../assets/images/nocmt.png";
 
-import StarsRating from "react-star-rate";
-import { ReactionBarSelector } from "@charkour/react-reactions";
+import { ProductService } from "../../services/product.service";
+import { CartService } from "../../services/cart.service";
 
 import { FaShoppingCart } from "react-icons/fa";
-import { AiTwotoneHeart } from "react-icons/ai";
-import { BsFacebook, BsTwitter } from "react-icons/bs";
-import { ImGooglePlus } from "react-icons/im";
-import { SiGmail } from "react-icons/si";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus, faPlus, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import Swal from "sweetalert2";
-import { RatingService } from "../services/rating.service";
-import { useDataContext } from "../context/DataProvider";
-import Comment from "../components/Comment/Comment";
-import { GlobalUtil } from "../utils/GlobalUtil";
+import Comment from "../../components/Comment/Comment";
+import { GlobalUtil } from "../../utils/GlobalUtil";
+import StarRatings from "react-star-ratings";
+import SelectRating from "./SelectRating";
+import useRatingData from "../../hooks/useRatingData";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -34,7 +28,8 @@ const ProductDetail = () => {
   const [productRelattionship, setProductRelationship] = useState([]);
   const [currentImgUp, setCurrentImgUp] = useState("");
   let [count, setCount] = useState(1);
-  const [rating, setRating] = useState([]);
+
+  const { data, setType } = useRatingData(1);
 
   const quantityRef = useRef();
   const navigate = useNavigate();
@@ -86,6 +81,10 @@ const ProductDetail = () => {
     }
   };
 
+  const clickNav = (status) => {
+    setType(status);
+  };
+
   useEffect(() => {
     let isFetched = true;
     const fetchProduct = () => {
@@ -98,26 +97,20 @@ const ProductDetail = () => {
     };
 
     const fetchProductRelationship = () => {
-      ProductService.get4RelateProduct(id).then((res) => {
+      const input = {
+        category_id: product.category_id,
+        brand_id: product.brand_id,
+        order_by: "CreatedAt desc",
+        page_count: 3,
+      };
+      ProductService.getAllProduct(input).then((res) => {
         if (isFetched) {
           setProductRelationship(res.data);
         }
       });
     };
 
-    const fetchRating = () => {
-      const input = {
-        product_id: id,
-      };
-      RatingService.getAllRating(input).then((res) => {
-        if (isFetched) {
-          setRating(res.data);
-        }
-      });
-    };
-
     window.scrollTo(0, 0);
-    fetchRating();
     fetchProductRelationship();
     fetchProduct();
     return () => {
@@ -150,12 +143,16 @@ const ProductDetail = () => {
                   </ol>
                 </nav>
               </div>
-              <SidebarProduct />
-              <div className="col-lg-9 order-1 order-lg-2">
+              {/* <SidebarProduct /> */}
+              <div className="col-lg-12 order-1 order-lg-2">
                 <div id="productMain" className="row">
-                  <div className="col-md-6 content-left">
+                  <div className="col-md-5 content-left">
                     <div className="img-up">
-                      <img src={currentImgUp} className="img-fluid" />
+                      <img
+                        style={{ height: "450px", width: "450px" }}
+                        src={currentImgUp}
+                        className="img-fluid"
+                      />
                     </div>
                     <div className="img-down d-flex justify-content-between">
                       {product?.product_images?.map((item) => {
@@ -166,14 +163,19 @@ const ProductDetail = () => {
                               onClick={() =>
                                 setCurrentImgUp(`https://${item?.uri}`)
                               }
+                              className={
+                                currentImgUp === `https://${item?.uri}`
+                                  ? "active"
+                                  : undefined
+                              }
                             />
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                  <div className="col-md-6">
-                    <div className="box">
+                  <div className="col-md-7">
+                    <div className="box" style={{ height: "100%" }}>
                       <h1 className="text-center">{product.name}</h1>
                       <p className="goToDescription">
                         <a href="#details" className="scroll-to">
@@ -197,7 +199,7 @@ const ProductDetail = () => {
                           defaultValue="1"
                           value={count}
                           min={1}
-                          className="col-md-2"
+                          className="col-md-1"
                         />
                         <button className="button-quantity">
                           <FontAwesomeIcon
@@ -208,7 +210,7 @@ const ProductDetail = () => {
                         </button>
                       </div>
                       <p className="price">
-                        {GlobalUtil.commas(Number(product.price) + "₫")}
+                        {GlobalUtil.commas(product.price + "") + "₫"}
                       </p>
                       <p className="text-center buttons">
                         <button
@@ -319,46 +321,48 @@ const ProductDetail = () => {
                   </div> */}
                 </div>
 
-                <div className="comment">
-                  {rating.map((item) => {
-                    return <Comment {...item} key={item.id} />;
-                  })}
+                <div className="comment box">
+                  <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
+                  <div className="star-box d-flex">
+                    <div className="col-2">
+                      <div className="star-number d-flex align-items-center justify-content-center">
+                        <div className="bigger">{product?.avg_star}</div>trên 5
+                      </div>
+                      <StarRatings
+                        rating={product?.avg_star}
+                        starRatedColor="rgb(238, 77, 45)"
+                        starDimension="25px"
+                        starSpacing="0px"
+                      />
+                    </div>
+                    <SelectRating onClickNav={clickNav} />
+                  </div>
+                  {data.length > 0 && (
+                    <div>
+                      {data.map((item) => {
+                        return <Comment {...item} key={item.id} />;
+                      })}
+                    </div>
+                  )}
+                  {data.length === 0 && (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <img src={nocomment} />
+                      <h3>Chưa có đánh giá</h3>
+                    </div>
+                  )}
                 </div>
+
                 <div style={{ marginBottom: "30px", marginTop: "60px" }}>
-                  <h3>Sản phẩm liên quan</h3>
+                  <h3>Sản Phẩm Liên Quan</h3>
                 </div>
-                <div className="row same-height-row">
+                <div className="row">
                   {productRelattionship?.map((item) => {
                     return (
-                      <div className="col-md-3 col-sm-6">
+                      <div className="col-md-4 col-sm-6">
                         <Gallery
                           key={item.id}
                           id={item.id}
-                          image={
-                            "http://localhost:8080/api/v1/image_product/" +
-                            item.image
-                          }
-                          name={item.name}
-                          price={item.price}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-                <div style={{ marginBottom: "30px", marginTop: "60px" }}>
-                  <h3>Sản phẩm đã xem cần đây</h3>
-                </div>
-                <div className="row same-height-row">
-                  {productRelattionship.map((item) => {
-                    return (
-                      <div className="col-md-3 col-sm-6">
-                        <Gallery
-                          key={item.id}
-                          id={item.id}
-                          image={
-                            "http://localhost:8080/api/v1/image_product/" +
-                            item.image
-                          }
+                          image={"https://" + item.product_images[0].uri}
                           name={item.name}
                           price={item.price}
                         />

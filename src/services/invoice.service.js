@@ -1,9 +1,9 @@
 import { axiosInstance } from "../configuration/axios.config";
 import configAPI from "../configuration/apiConfig.json";
 
-const getAllInvoice = () => {
+const getAllInvoice = (input) => {
   return axiosInstance
-    .get(configAPI.baseUrlApiMain + "/invoice/my-invoice")
+    .get(configAPI.baseUrlApiMain + "/invoice/my-invoice", { params: input })
     .then((res) => {
       return res.data;
     });
@@ -24,35 +24,25 @@ const getInvoiceByInvoiceId = (id) => {
     });
 };
 
-const placeOrderByPayMethodAndAddress = (data) => {
+const placeOrderCOD = (data) => {
   return axiosInstance
-    .post(configAPI.baseUrlApiMain + "/invoice", data)
+    .post(configAPI.baseUrlApiMain + "/invoice/cod", data)
     .then((res) => {
       return res.data;
     });
 };
 
-const placeOrderByCartIdAndAddress = (cartId, addressId) => {
+const placeOrderMomo = (data) => {
   return axiosInstance
-    .post(
-      configAPI.baseUrlApiMain +
-        `/api/v1/invoice/${cartId}/address/${addressId}`
-    )
+    .post(configAPI.baseUrlApiMain + "/invoice/momo", data)
     .then((res) => {
       return res.data;
     });
 };
 
-const updatePaymentStatus = (id) => {
+const updatePaymentStatus = (input) => {
   return axiosInstance
-    .patch(configAPI.baseUrlApiMain + "/api/v1/invoice/payment/" + id)
-    .then((response) => {
-      return response.data;
-    });
-};
-const cancelInvoice = (id) => {
-  return axiosInstance
-    .delete(configAPI.baseUrlApiMain + "/api/v1/invoice/" + id)
+    .patch(configAPI.baseUrlApiMain + "/invoice/change-status", input)
     .then((response) => {
       return response.data;
     });
@@ -61,9 +51,8 @@ const cancelInvoice = (id) => {
 export const InvoiceService = {
   getAllInvoice,
   createInvoiceByCartId,
-  placeOrderByCartIdAndAddress,
-  placeOrderByPayMethodAndAddress,
+  placeOrderMomo,
+  placeOrderCOD,
   updatePaymentStatus,
-  cancelInvoice,
   getInvoiceByInvoiceId,
 };

@@ -11,18 +11,33 @@ const Gallery = ({ id, image, name, price, discount }) => {
           <div className="flipper">
             <div className="front">
               <Link to={`/product-detail/${id}`}>
-                <img src={image} alt="" className="img-fluid" />
+                <img
+                  style={{ height: "240px", width: "225px" }}
+                  src={image}
+                  alt=""
+                  className="img-fluid"
+                />
               </Link>
             </div>
             <div className="back">
               <Link to={`/product-detail/${id}`}>
-                <img src={image} alt="" className="img-fluid" />
+                <img
+                  style={{ height: "240px", width: "225px" }}
+                  src={image}
+                  alt=""
+                  className="img-fluid"
+                />
               </Link>
             </div>
           </div>
         </div>
         <Link to={`/product-detail/${id}`} className="invisible">
-          <img src={image} alt="" className="img-fluid" />
+          <img
+            style={{ height: "240px", width: "225px" }}
+            src={image}
+            alt=""
+            className="img-fluid"
+          />
         </Link>
         <div className="text">
           <h3>

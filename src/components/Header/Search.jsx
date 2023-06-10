@@ -5,7 +5,6 @@ import Header from "./Header";
 import SidebarProduct from "../Sidebar/SidebarProduct";
 import { Link, useParams } from "react-router-dom";
 import { ProductService } from "../../services/product.service";
-import Gallery from "../Gallery/Gallery";
 import Error from "../../pages/Error";
 import { useDataContext } from "../../context/DataProvider";
 import Pagination from "../Pagination/Pagination";

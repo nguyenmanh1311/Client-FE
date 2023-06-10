@@ -24,6 +24,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
   const minPriceRef = useRef();
   const maxPriceRef = useRef();
   let isFetched = true;
+
   useEffect(() => {
     return () => {
       isFetched = false;
@@ -129,7 +130,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Đen"
+                      value={101}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -152,7 +153,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Xám"
+                      value={102}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -175,7 +176,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Trắng"
+                      value={103}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -198,7 +199,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Đỏ"
+                      value={104}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -221,7 +222,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Vàng"
+                      value={105}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -244,7 +245,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Cam"
+                      value={106}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -267,7 +268,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Xanh dương"
+                      value={107}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -290,7 +291,7 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                   <label className="container d-flex align-items-center">
                     <input
                       type="checkbox"
-                      value="Xanh lá"
+                      value={108}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setColor((pre) => {
@@ -307,6 +308,52 @@ const SidebarProduct = ({ category_id, brand_id }) => {
                     />{" "}
                     <span className="checkmark"></span>
                     <div>Xanh lá</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value={109}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Nâu</div>
+                  </label>
+                </div>
+                <div className="checkbox d-flex justify-content-start">
+                  <label className="container d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      value={110}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setColor((pre) => {
+                            return [...pre, e.target.value];
+                          });
+                        } else {
+                          setColor((pre) => {
+                            return pre.filter(
+                              (item) => item !== e.target.value
+                            );
+                          });
+                        }
+                      }}
+                    />{" "}
+                    <span className="checkmark"></span>
+                    <div>Hồng</div>
                   </label>
                 </div>
               </div>

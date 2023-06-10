@@ -200,6 +200,7 @@ const Header = () => {
               </li>
             </ul>
             <div className="navbar-buttons d-flex justify-content-end">
+              {/* <div className="d-flex flex-column"> */}
               <div className="input-form">
                 <input
                   id="input-search"
@@ -222,6 +223,15 @@ const Header = () => {
                   ></ImSearch>
                 </button>
               </div>
+              {/* <div>
+                  <ul>
+                    <li className="list-item">John</li>
+                    <li className="list-item">Mick</li>
+                    <li className="list-item">Seven</li>
+                  </ul>
+                </div> */}
+              {/* </div> */}
+
               <div
                 id="basket-overview"
                 className="navbar-collapse collapse d-none d-lg-block"

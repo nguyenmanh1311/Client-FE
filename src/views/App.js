@@ -6,10 +6,8 @@ import Error from "../pages/Error";
 import Basket from "../pages/Basket";
 
 import Category from "../pages/Category";
-import ProductDetail from "../pages/ProductDetail";
 import Contact from "../pages/Contact";
 import Account from "../pages/Account";
-import Wishlist from "../pages/Wishlist";
 import Login from "../components/Login/Login";
 import ProductByBrand from "../pages/ProductByBrand";
 import ProductByCategory from "../pages/ProductByCategory";
@@ -32,6 +30,7 @@ import AllOrder from "../pages/Order/AllOrder";
 import OrderDetail from "../pages/Order/OrderDetail";
 import OTP from "../components/OTP/OTP";
 import News from "../pages/News";
+import ProductDetail from "../pages/ProductDetail/ProductDetail";
 
 function App() {
   return (
@@ -90,12 +89,7 @@ function App() {
             <Route path="/all-order">
               <Route index element={<AllOrder />} />
               <Route path="all" element={<AllOrder />} />
-
-              <Route path="delivering" element={<AllOrder />} />
-              <Route path="complete" element={<AllOrder />} />
-              <Route path="cancel" element={<AllOrder />} />
             </Route>
-            <Route path="/wishlist" element={<Wishlist />} />
           </Routes>
         </BrowserRouter>
       </div>

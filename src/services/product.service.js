@@ -8,9 +8,11 @@ const getAllProduct = (data) => {
       return res.data;
     });
 };
-const getAllTopSelling = () => {
+const getAllTopSelling = (data) => {
   return axiosInstance
-    .get(configAPI.baseUrlApi + "/api/v1/product/topselling")
+    .get(configAPI.baseUrlApiMain + "/product/product-invoice", {
+      params: data,
+    })
     .then((res) => {
       return res.data;
     });
@@ -56,14 +58,6 @@ const getProductById = (id) => {
     });
 };
 
-const get4RelateProduct = (idProduct) => {
-  return axiosInstance
-    .get(`${configAPI.baseUrlApi}/api/v1/product/top4related/${idProduct}`)
-    .then((res) => {
-      return res.data;
-    });
-};
-
 const getProductByFilter = (data) => {
   return axiosInstance
     .post(`${configAPI.baseUrlApi}/api/v1/product/filter`, data)
@@ -79,7 +73,6 @@ export const ProductService = {
   getProductSameCate,
   get10ProductFeature,
   getProductByName,
-  get4RelateProduct,
   getAllTopSelling,
   getProductByFilter,
 };

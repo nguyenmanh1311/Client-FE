@@ -77,7 +77,7 @@ const Basket = () => {
                     <h1>Giỏ hàng</h1>
                     <FaCartPlus
                       style={{
-                        fontSize: "100px",
+                        fontSize: "150px",
                         marginTop: "30px",
                         color: "#191313ad",
                       }}

@@ -1,12 +1,13 @@
 import { ReactionBarSelector } from "@charkour/react-reactions";
 import React, { useState } from "react";
-import StarsRating from "react-star-rate";
 import { GlobalUtil } from "../../utils/GlobalUtil";
+import StarRatings from "react-star-ratings";
 
 const Comment = (item) => {
   const [selectedReaction, setSelectedReaction] = useState();
   const [reactionId, setReactionId] = useState();
   const [isHidden, setIsHidden] = useState(true);
+  const [currentImgCmtUp, setCurrentImgCmtUp] = useState();
 
   function handleReactionSelect(reactions) {
     setSelectedReaction(reactions);
@@ -35,27 +36,65 @@ const Comment = (item) => {
 
   return (
     <div className="row d-flex justify-content-start align-items-start">
-      <img src={"https://" + item?.creator.avatar} alt="Avatar" />
+      <img src={"https://" + item?.creator.avatar} className="avatar" alt="" />
       <div className="comment-text">
         <div className="d-flex justify-content-start">
           {item?.creator?.fullname}
         </div>
-        <StarsRating defaultValue={item?.rate} disabled="false" />
+
+        <StarRatings
+          rating={item?.rate}
+          starRatedColor="rgb(238, 77, 45)"
+          starDimension="15px"
+          starSpacing="0px"
+          starHoverColor="none"
+        />
 
         <div className="datetime d-flex justify-content-start">
           {GlobalUtil.dateTimeConvert(item?.created_at)}
         </div>
         <br />
-        <p>{item?.content}</p>
-        <div className="img-down d-flex justify-content-start">
+        <p className="d-flex justify-content-start">{item?.content}</p>
+
+        <div className="img-container d-flex justify-content-start">
           {item?.product_review_images?.map((item) => {
             return (
-              <div className="img-small" key={item?.file_upload_id}>
-                <img src={"https://" + item?.uri} />
+              <div className="img" key={item?.file_upload_id}>
+                <img
+                  src={"https://" + item?.uri}
+                  onClick={() => {
+                    if (currentImgCmtUp !== `https://${item?.uri}`) {
+                      setCurrentImgCmtUp(`https://${item?.uri}`);
+                    } else {
+                      setCurrentImgCmtUp("");
+                    }
+                  }}
+                  className={
+                    currentImgCmtUp === `https://${item?.uri}`
+                      ? "active"
+                      : undefined
+                  }
+                />
               </div>
             );
           })}
         </div>
+        {currentImgCmtUp && (
+          <div className="d-flex justify-content-between">
+            <div className="img-up">
+              <img
+                style={{
+                  height: "397.5px",
+                  width: "397.5px",
+                  marginTop: "10px",
+                  borderRadius: "10px",
+                }}
+                src={currentImgCmtUp}
+                className="img-fluid"
+              />
+            </div>
+          </div>
+        )}
 
         <div className="comment-actions">
           {selectedReaction && reactionId === 1 && (

@@ -9,6 +9,15 @@ import { Link } from "react-router-dom";
 import SidebarNews from "../components/Sidebar/SidebarNews";
 
 const News = () => {
+  const htmlContent = (
+    <span style={{ color: "#ff0033" }}>
+      <strong>
+        <span style={{ fontSize: "12pt" }}>
+          A) GIẢM GIÁ ĐỊNH KỲ VÀ GIẢM GIÁ KHÔNG BÁO TRƯỚC
+        </span>
+      </strong>
+    </span>
+  );
   return (
     <>
       <Header />
@@ -41,7 +50,7 @@ const News = () => {
                       />
                     </div>
                     <div className="col-lg-9 d-flex justify-content-center flex-column">
-                      <p class="title">Nội dung ở đây</p>
+                      <p className="title">{htmlContent}</p>
                       <p>Mô tả ngắn</p>
                       <a>Xem thêm</a>
                     </div>

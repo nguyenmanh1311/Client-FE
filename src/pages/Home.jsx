@@ -25,13 +25,16 @@ const Home = () => {
 
   useEffect(() => {
     let isFetched = true;
-    // const fetchProductFeature = () => {
-    //   ProductService.getAllTopSelling().then((res) => {
-    //     if (isFetched) {
-    //       setProductFeature(res.data);
-    //     }
-    //   });
-    // };
+    const fetchProductFeature = () => {
+      const data = {
+        page_count: 8,
+      };
+      ProductService.getAllTopSelling(data).then((res) => {
+        if (isFetched) {
+          setProductFeature(res.data);
+        }
+      });
+    };
 
     const fetch8ProductNew = () => {
       const data = {
@@ -44,7 +47,7 @@ const Home = () => {
         }
       });
     };
-    // fetchProductFeature();
+    fetchProductFeature();
     fetch8ProductNew();
     return () => {
       isFetched = false;
@@ -58,11 +61,12 @@ const Home = () => {
           <div className="row">
             <div className="col-md-12">
               <Carousel
-                renderCenterLeftControls={false}
-                renderCenterRightControls={false}
-                renderCenterBottomControls={true}
+                wrapAround={true}
+                withoutControls={true}
                 style={{ marginBottom: "30px" }}
                 id="main-slider"
+                autoplay={true}
+                autoplayInterval={3000}
                 className="owl-carousel owl-theme"
               >
                 <div className="item">
@@ -94,11 +98,12 @@ const Home = () => {
           </div>
           <div className="container">
             <Carousel
-              renderCenterLeftControls={false}
-              renderCenterRightControls={false}
-              renderCenterBottomControls={false}
+              wrapAround={true}
+              withoutControls={true}
               style={{ paddingBottom: "60px" }}
               slidesToShow={4}
+              autoplay={true}
+              autoplayInterval={3000}
               className="product-slider owl-carousel owl-theme"
             >
               {productFeature.map((item) => {
@@ -106,9 +111,7 @@ const Home = () => {
                   <Gallery
                     key={item.id}
                     id={item.id}
-                    image={
-                      "http://localhost:8080/api/v1/image_product/" + item.image
-                    }
+                    image={"http://" + item?.product_images[0]?.uri}
                     name={item.name}
                     price={item.price}
                     discount={item.discount}
@@ -131,12 +134,12 @@ const Home = () => {
           </div>
           <div className="container">
             <Carousel
-              reder
-              renderCenterLeftControls={false}
-              renderCenterRightControls={false}
-              renderCenterBottomControls={false}
+              wrapAround={true}
+              withoutControls={true}
               style={{ paddingBottom: "60px" }}
               slidesToShow={4}
+              autoplay={true}
+              autoplayInterval={3000}
               className="product-slider owl-carousel owl-theme"
             >
               {productNew.map((item) => {

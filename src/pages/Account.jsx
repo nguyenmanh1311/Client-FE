@@ -21,7 +21,6 @@ const Account = () => {
 
   const [user, setUser] = useState([]);
   const [changed, setChanged] = useState(true);
-  let genderFetch;
 
   // fetch data
   const [fetchedDate, setFetchedDate] = useState(null);
@@ -72,8 +71,6 @@ const Account = () => {
     navigate("/login");
   }
 
-  console.log(genderFetch);
-
   const handleFetchBirthday = (fetchedDateStr) => {
     const parsedDate = new Date(fetchedDateStr);
     const value =
@@ -92,10 +89,8 @@ const Account = () => {
       AuthService.getProfile().then((res) => {
         if (res.status_code === 200) {
           setUser(res.data);
-          console.log(res.data.gender);
           const fetchedDateStr = res.data.date_of_birth;
           handleFetchBirthday(fetchedDateStr);
-          genderFetch = res.data.gender;
         }
       });
     };
@@ -105,6 +100,10 @@ const Account = () => {
       setDateInput(fetchedDate);
     }
   }, [changed, fetchedDate]);
+
+  useEffect(() => {
+    setselectedGender(user.gender);
+  }, [user]);
 
   return (
     <>
@@ -174,9 +173,9 @@ const Account = () => {
                               type="radio"
                               name="radio"
                               value="1"
-                              defaultChecked={genderFetch === 1}
+                              checked={selectedGender === 1}
                               onChange={(e) => {
-                                setselectedGender(e.target.value);
+                                setselectedGender(Number(e.target.value));
                               }}
                             />
                             <span className="checkmark"></span>
@@ -187,9 +186,9 @@ const Account = () => {
                               type="radio"
                               name="radio"
                               value="2"
-                              defaultChecked={genderFetch === 2}
+                              checked={selectedGender === 2}
                               onChange={(e) => {
-                                setselectedGender(e.target.value);
+                                setselectedGender(Number(e.target.value));
                               }}
                             />
                             <span className="checkmark"></span>
@@ -200,9 +199,9 @@ const Account = () => {
                               type="radio"
                               name="radio"
                               value="3"
-                              defaultChecked={genderFetch === 3}
+                              checked={selectedGender === 3}
                               onChange={(e) => {
-                                setselectedGender(e.target.value);
+                                setselectedGender(Number(e.target.value));
                               }}
                             />
                             <span className="checkmark"></span>

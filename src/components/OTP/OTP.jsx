@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState } from "react";
 import InputOTP from "./InputOTP";
 import "./OTP.scss";
 import Swal from "sweetalert2";
@@ -7,14 +7,13 @@ import { AuthService } from "../../services/auth.service";
 import { useNavigate } from "react-router-dom";
 
 const OTP = () => {
-  // const [orgOTPParent, setOrgOTPParent] = useState("");
   const [userOTPParent, setUserOTPParent] = useState("");
   const [newPasswordParent, setNewPasswordParent] = useState("");
   const [newPasswordConfirmParent, setNewPasswordConfirmParent] = useState("");
   const [isDisableBtn, setIsDisableBtn] = useState(false);
   const { phoneForgetPass } = useDataContext();
 
-  const navigate = useNavigate;
+  const navigate = useNavigate();
 
   const handleSubmitOTP = () => {
     if (!userOTPParent) {
@@ -31,17 +30,26 @@ const OTP = () => {
     AuthService.confirmPassword(data)
       .then((response) => {
         if (response.data.status_code === 200) {
-          Swal.fire("Thông báo", "Khôi phục mật khẩu thành công", "success");
+          Swal.fire("Thông báo", "Khôi phục mật khẩu thành công.", "success");
           navigate("/login");
         }
+        if (response.data.status_code === 400) {
+          Swal.fire(
+            "Thông báo",
+            "OTP không đúng, vui lòng kiểm tra lại.",
+            "error"
+          );
+        }
+        if (response.data.status_code === 404) {
+          Swal.fire("Thông báo", "OTP hết hạn, vui lòng nhập lại", "error");
+        }
       })
-      .catch(function (error) {});
+      .catch(() => {});
   };
 
   return (
     <div className="otp-parent-container">
       <div className="form-box">
-        {/* <GenerateOTP setOrgOTPParent={setOrgOTPParent} /> */}
         <InputOTP
           setUserOTPParent={setUserOTPParent}
           handleSubmitOTP={handleSubmitOTP}

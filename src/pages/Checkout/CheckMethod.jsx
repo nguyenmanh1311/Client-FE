@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import useLocationForm from "../../components/Address/useLocationForm";
 
 import "../../styles/Style.scss";
 import Footer from "../../components/Footer/Footer";
@@ -8,63 +7,52 @@ import { CartService } from "../../services/cart.service";
 import { GlobalUtil } from "../../utils/GlobalUtil";
 
 import { Link, useNavigate } from "react-router-dom";
-import { AddressService } from "../../services/address.service";
 import { ImEye, ImTruck } from "react-icons/im";
 import { MdPayment } from "react-icons/md";
 import GHN from "../../assets/images/delivery/GHN.png";
 import MOMO from "../../assets/images/payment/momo.png";
 import COD from "../../assets/images/payment/cod.png";
 import { InvoiceService } from "../../services/invoice.service";
-import { PaymentService } from "../../services/payment.service";
+import useDeliveryData from "../../hooks/useDeliveryData";
 
 const CheckMethod = () => {
   const [cartDetail, setCartDetail] = useState([]);
   const [cartId, setCartId] = useState("");
   const [paymentId, setPaymentId] = useState(null);
+  const [deliveryMethodName, setDeliveryMethodName] = useState(null);
   const [deliveryId, setDeliveryId] = useState(null);
+  const { services, getService, deliveryFee, calculateFee } =
+    useDeliveryData(true);
 
   let total = 0;
 
-  const addressLine = useRef();
-  const fullName = useRef();
-  const phone = useRef();
   const navigate = useNavigate();
+
+  const deliveryMethodChange = (e) => {
+    calculateFee(Number(e.target.value), total);
+  };
 
   const placeOrder = () => {
     const addressId = JSON.parse(localStorage.getItem("address-id"));
+    const paymentData = {
+      shipping_fee: Number(deliveryFee?.total),
+      address_id: addressId,
+    };
     if (paymentId === 3) {
-      const paymentData = {
-        payment_method: 3,
-        address_id: addressId,
-      };
-      InvoiceService.placeOrderByPayMethodAndAddress(paymentData).then(
-        (res) => {
-          if (res.status_code === 200) {
-            navigate("/success");
-          }
+      InvoiceService.placeOrderCOD(paymentData).then((res) => {
+        if (res.status_code === 200) {
+          navigate("/success");
         }
-      );
+      });
     }
 
-    // InvoiceService.placeOrderByCartIdAndAddress(cartId, addressId).then(
-    //   (res) => {
-    //     if (res.status === 200) {
-    //       if (paymentId === 3) {
-    //         const paymentData = {
-    //           payment_method: 3,
-    //           address_id: addressId,
-    //         };
-    //         PaymentService.createPayment(paymentData).then((res) => {
-    //           if (res.status_code === 200) {
-    //             window.location.href = res.data;
-    //           }
-    //         });
-    //       } else {
-    //         navigate("/success");
-    //       }
-    //     }
-    //   }
-    // );
+    if (paymentId === 2) {
+      InvoiceService.placeOrderMomo(paymentData).then((res) => {
+        if (res.status_code === 200) {
+          window.location.href = res.data.pay_url;
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -163,10 +151,19 @@ const CheckMethod = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {cartDetail.map((item) => {
-                          total =
-                            total +
-                            item?.product?.price * item?.product?.quantity;
+                        {cartDetail?.map((item) => {
+                          {
+                            deliveryFee?.total
+                              ? (total =
+                                  total +
+                                  Number(item?.product?.price) *
+                                    Number(item.quantity) +
+                                  deliveryFee?.total)
+                              : (total =
+                                  total +
+                                  Number(item?.product?.price) *
+                                    Number(item.quantity));
+                          }
                           return (
                             <tr key={item.id}>
                               <td>
@@ -222,6 +219,26 @@ const CheckMethod = () => {
                         })}
                       </tbody>
                       <tfoot>
+                        <tr>
+                          <th
+                            colSpan="4"
+                            style={{
+                              textAlign: "center",
+                            }}
+                          >
+                            Phí vận chuyển
+                          </th>
+                          <th
+                            colSpan="2"
+                            style={{
+                              textAlign: "center",
+                            }}
+                          >
+                            {deliveryFee?.total
+                              ? GlobalUtil.commas(deliveryFee.total + "") + "₫"
+                              : "0₫"}
+                          </th>
+                        </tr>
                         {total !== 0 && (
                           <tr>
                             <th
@@ -264,48 +281,35 @@ const CheckMethod = () => {
                     <ImTruck className="mr-2" />
                     PHƯƠNG THỨC VẬN CHUYỂN
                   </div>
-                  <label className="d-flex gap-3" htmlFor="fast">
-                    <div className="row d-flex align-items-center ">
-                      <div className="">
-                        <input
-                          type="radio"
-                          name="delivery"
-                          className="mr-2"
-                          id="fast"
-                          value="1"
-                        />
-                        GIAO HÀNG NHANH
-                      </div>
-                      <div className="">
-                        <img
-                          style={{ width: "60px", height: "30px" }}
-                          src={GHN}
-                          alt=""
-                        />
-                      </div>
-                    </div>
-                  </label>
-                  <label className="d-flex gap-3" htmlFor="tietkiem">
-                    <div className="row d-flex align-items-center ">
-                      <div className="">
-                        <input
-                          type="radio"
-                          name="delivery"
-                          className="mr-2"
-                          id="tietkiem"
-                          value="2"
-                        />
-                        GIAO HÀNG TIẾT KIỆM
-                      </div>
-                      <div className="">
-                        <img
-                          style={{ width: "60px", height: "30px" }}
-                          src={GHN}
-                          alt=""
-                        />
-                      </div>
-                    </div>
-                  </label>
+                  <div onChange={deliveryMethodChange}>
+                    {services?.map((item) => {
+                      return (
+                        <label key={item.service_id} className="d-flex gap-3">
+                          <div className="row d-flex align-items-center">
+                            <input
+                              type="radio"
+                              name="deliveryMethod"
+                              value={item.service_id}
+                              className="mr-2"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setDeliveryMethodName(item.short_name);
+                                }
+                              }}
+                            />
+                            <p className="uppercase">{item.short_name}</p>
+                            <div className="">
+                              <img
+                                style={{ width: "60px", height: "30px" }}
+                                src={GHN}
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div

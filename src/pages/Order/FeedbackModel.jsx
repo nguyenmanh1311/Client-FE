@@ -1,6 +1,6 @@
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import StarsRating from "react-star-rate";
 import swal2 from "sweetalert2";
 import { ImageService } from "../../services/image.service";
@@ -9,37 +9,37 @@ import { RatingService } from "../../services/rating.service";
 const FeedbackModel = ({ handleShowForm, feedback }) => {
   const [star, setStar] = useState();
   const [arrFile, setArrFile] = useState([]);
+  const [arrId, setArrId] = useState([]);
   const [content, setContent] = useState();
 
   const submitForm = () => {
-    var form = new FormData();
-    for (let i = 0; i < arrFile.length; i++) {
-      form.append("image", arrFile[i]);
-    }
-    ImageService.uploadImage(form).then((res) => {
+    const data = {
+      file_upload_ids: arrId,
+      content: content,
+      rate: star,
+      product_id: feedback.product.id,
+    };
+
+    RatingService.postRating(data).then((res) => {
       if (res.status_code === 200) {
-        let images = [];
-        for (let i = 0; i < res.data?.length; i++) {
-          images.push(res.data[i]);
-        }
-        const data = {
-          file_upload_ids: images.id,
-          content: content,
-          rate: star,
-          product_id: feedback.product.id,
-        };
-        console.log(data);
-        RatingService.postRating(data).then((res) => {
-          if (res.data.status_code === 200) {
-            swal2.fire("Thông báo", "Đánh giá sản phẩm thành công", "success");
-          } else {
-            swal2.fire("Thông báo", "Đánh giá sản phẩm thất bại", "warning");
-          }
-        });
+        swal2
+          .fire({
+            title: "Thông báo",
+            icon: "success",
+            text: "Đánh giá sản phẩm thành công",
+            confirmButtonText: "Đồng ý",
+          })
+          .then((result) => {
+            if (result.isConfirmed) {
+              handleShowForm();
+              window.location.reload();
+            }
+          });
+      } else {
+        swal2.fire("Thông báo", "Đánh giá sản phẩm thất bại", "warning");
       }
     });
   };
-
   return (
     <div
       style={{
@@ -112,10 +112,21 @@ const FeedbackModel = ({ handleShowForm, feedback }) => {
               <input
                 type="file"
                 id="file"
-                onChange={(e) => {
+                onChange={async (e) => {
                   setArrFile((currentFile) => {
                     return [...currentFile, ...e.target.files];
                   });
+                  for (let i = 0; i < e.target.files.length; i++) {
+                    var form = new FormData();
+                    form.append("image", e.target.files[i]);
+
+                    const res = await ImageService.uploadImage(form);
+                    if (res.status_code === 200) {
+                      setArrId((prev) => {
+                        return [...prev, res.data.id];
+                      });
+                    }
+                  }
                 }}
                 style={{ display: "none" }}
                 multiple
@@ -138,6 +149,9 @@ const FeedbackModel = ({ handleShowForm, feedback }) => {
                         })
                         .then((result) => {
                           if (result.isConfirmed) {
+                            setArrId((prev) => {
+                              return prev.filter((e, i) => i !== index);
+                            });
                             setArrFile((currentFile) => {
                               return currentFile.filter((e) => e !== item);
                             });
