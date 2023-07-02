@@ -29,8 +29,9 @@ import Product from "../pages/Product";
 import AllOrder from "../pages/Order/AllOrder";
 import OrderDetail from "../pages/Order/OrderDetail";
 import OTP from "../components/OTP/OTP";
-import News from "../pages/News";
 import ProductDetail from "../pages/ProductDetail/ProductDetail";
+import AllPosts from "../pages/Post/AllPosts";
+import PostDetail from "../pages/Post/PostDetail";
 
 function App() {
   return (
@@ -71,7 +72,10 @@ function App() {
             </Route>
 
             <Route path="/contact" element={<Contact />} />
-            <Route path="/news" element={<News />} />
+            <Route path="/posts">
+              <Route index element={<AllPosts />} />
+              <Route path=":id" element={<PostDetail />} />
+            </Route>
 
             <Route path="/account">
               <Route index element={<Account />} />

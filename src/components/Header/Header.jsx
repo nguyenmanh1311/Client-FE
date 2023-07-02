@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import swal2 from "sweetalert2";
 import { AuthService } from "../../services/auth.service";
+import Search from "../Search/Search";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -189,7 +190,7 @@ const Header = () => {
                 </ul>
               </li>
               <li className="nav-item">
-                <Link to="/news" className="nav-link">
+                <Link to="/posts" className="nav-link">
                   Tin tức
                 </Link>
               </li>
@@ -202,7 +203,7 @@ const Header = () => {
             <div className="navbar-buttons d-flex justify-content-end">
               {/* <div className="d-flex flex-column"> */}
               <div className="input-form">
-                <input
+                {/* <input
                   id="input-search"
                   onKeyDown={handleKeyDown}
                   type="text"
@@ -221,7 +222,8 @@ const Header = () => {
                     color="white"
                     className="fa fa-search"
                   ></ImSearch>
-                </button>
+                </button> */}
+                <Search />
               </div>
               {/* <div>
                   <ul>

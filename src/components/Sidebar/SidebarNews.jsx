@@ -7,79 +7,35 @@ import { BrandService } from "../../services/brand.service";
 import { CategoryService } from "../../services/category.service";
 // import "../../styles/Style.scss";
 import "./Sidebar.scss";
+import { PostService } from "../../services/post.service";
 
-const SidebarNews = ({ category_id, brand_id }) => {
-  const [allBrand, setAllBrand] = useState([]);
-  const [allCategory, setAllCategory] = useState([]);
-
-  const { color, setColor } = useDataContext();
-  const { categories, setCategories } = useDataContext();
-  const { brands, setBrands } = useDataContext();
-  const { minPrice, setMinPrice } = useDataContext();
-  const { maxPrice, setMaxPrice } = useDataContext();
-  const { currentPageNumber } = useDataContext();
-  const { orderBy } = useDataContext();
-  const { pageCount } = useDataContext();
-
-  const minPriceRef = useRef();
-  const maxPriceRef = useRef();
-  let isFetched = true;
-  useEffect(() => {
-    return () => {
-      isFetched = false;
-    };
-  }, [
-    categories,
-    brands,
-    color,
-    minPrice,
-    maxPrice,
-    currentPageNumber,
-    orderBy,
-    pageCount,
-  ]);
+const SidebarNews = () => {
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const fetchshowAllCategory = () => {
-      CategoryService.getAllCategory().then((res) => {
-        setAllCategory(res.data);
+    const fetchPosts = () => {
+      PostService.getAllPosts().then((res) => {
+        if (res.status_code === 200) {
+          setPosts(res.data);
+        }
       });
     };
 
-    const fetchshowAllBrand = () => {
-      BrandService.getAllBrand().then((res) => {
-        setAllBrand(res.data);
-      });
-    };
-    if (isFetched) {
-      fetchshowAllBrand();
-      fetchshowAllCategory();
-    }
-
-    return () => {
-      isFetched = false;
-    };
+    fetchPosts();
   }, []);
 
-  const applyFilterPriceHandleClick = () => {
-    setMinPrice(
-      Number(minPriceRef.current.value) == 0
-        ? null
-        : Number(minPriceRef.current.value)
-    );
-    setMaxPrice(
-      Number(maxPriceRef.current.value) == 0
-        ? null
-        : Number(maxPriceRef.current.value)
-    );
-  };
   return (
     <div className="col-lg-3">
       <div className="card sidebar-menu mb-4">
         <div className="card-header">
-          <h3 className="h4 ">Bài viết nổi bật</h3>
+          <h3 className="h4">Bài viết nổi bật</h3>
         </div>
-        <div className="card-body"></div>
+        <div className="card-body">
+          {posts.length > 0 &&
+            posts.map((item, index) => {
+              return <div key={index}>{item.title}</div>;
+            })}
+        </div>
       </div>
     </div>
   );

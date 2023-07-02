@@ -2795,5 +2795,34 @@ code {
   .title {
     text-transform: uppercase;
     font-weight: bold;
+    color: #4fc1e9;
+    font-size: 20px;
+  }
+  a {
+    text-decoration: none;
+  }
+  .more:hover {
+    color: #d35400;
+  }
+
+  .logo {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+.news-detail-page {
+  .title {
+    padding: 10px 15px 10px 15px;
+    border-bottom: 1px solid #53a1cc;
+    content: "";
+    text-transform: uppercase;
+    color: #53a1cc;
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .img {
+    width: 100%;
   }
 }
