@@ -33,7 +33,13 @@ const SidebarNews = () => {
         <div className="card-body">
           {posts.length > 0 &&
             posts.map((item, index) => {
-              return <div key={index}>{item.title}</div>;
+              return (
+                <div key={index} className="title-card">
+                  <Link to={`/posts/${item.id}`}>
+                    <p className="more">{item.title}</p>
+                  </Link>
+                </div>
+              );
             })}
         </div>
       </div>

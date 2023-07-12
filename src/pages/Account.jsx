@@ -34,6 +34,9 @@ const Account = () => {
         .then((response) => {
           if (response.data.status_code === 200) {
             swal.fire("Thông báo", "Đổi mật khẩu thành công", "success");
+            setConfirmPasss("");
+            setOldPasss("");
+            setNewPasss("");
           }
         })
         .catch(() => {
@@ -53,7 +56,7 @@ const Account = () => {
 
     AuthService.updateProfile(data)
       .then((response) => {
-        if (response.data.status_code === 200) {
+        if (response.status_code === 200) {
           swal.fire(
             "Thông báo",
             "Cập nhật thông tin cá nhân thành công",
@@ -67,10 +70,6 @@ const Account = () => {
       });
   };
 
-  if (localStorage.getItem("accessToken") === null) {
-    navigate("/login");
-  }
-
   const handleFetchBirthday = (fetchedDateStr) => {
     const parsedDate = new Date(fetchedDateStr);
     const value =
@@ -83,6 +82,11 @@ const Account = () => {
       parsedDate.getDate();
     setFetchedDate(value);
   };
+  useEffect(() => {
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+    }
+  });
 
   useEffect(() => {
     const fetchUser = () => {
@@ -155,7 +159,7 @@ const Account = () => {
                             <input
                               id="birthday"
                               type="date"
-                              value={dateInput || ""}
+                              value={birthday || dateInput}
                               onChange={(e) => setBirthday(e.target.value)}
                             />
                           </div>
@@ -241,6 +245,7 @@ const Account = () => {
                             id="password_old"
                             type="password"
                             className="form-control"
+                            value={oldPass}
                             onChange={(e) => {
                               setOldPasss(e.target.value);
                             }}
@@ -256,6 +261,7 @@ const Account = () => {
                             id="password_1"
                             type="password"
                             className="form-control"
+                            value={newPass}
                             onChange={(e) => {
                               setNewPasss(e.target.value);
                             }}
@@ -272,6 +278,7 @@ const Account = () => {
                           <input
                             id="password_2"
                             type="password"
+                            value={confirmPass}
                             className="form-control"
                             onChange={(e) => {
                               setConfirmPasss(e.target.value);

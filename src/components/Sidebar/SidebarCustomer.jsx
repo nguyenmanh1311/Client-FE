@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../../styles/Style.scss";
-import logo from "../../assets/images/logo/baloshop.png";
+import swal2 from "sweetalert2";
 
 import { BsListTask, BsPersonFill } from "react-icons/bs";
-import { AiFillHeart } from "react-icons/ai";
-import { TbLogout } from "react-icons/tb";
 import { FaAddressBook } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
@@ -33,6 +31,17 @@ const SidebarCustomer = () => {
       if (res.status_code === 200) {
         const data = { avatar: res.data.uri };
         ImageService.uploadAvatar(data);
+        swal2
+          .fire({
+            title: "Cập nhật ảnh đại diện thành công",
+            confirmButtonText: "OK",
+          })
+          .then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload();
+            } else if (result.isDenied) {
+            }
+          });
       }
     });
   };

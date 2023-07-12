@@ -20,15 +20,6 @@ const AllPosts = () => {
 
     fetchPosts();
   }, []);
-  const htmlContent = (
-    <span style={{ color: "#ff0033" }}>
-      <strong>
-        <span style={{ fontSize: "12pt" }}>
-          A) GIẢM GIÁ ĐỊNH KỲ VÀ GIẢM GIÁ KHÔNG BÁO TRƯỚC
-        </span>
-      </strong>
-    </span>
-  );
   return (
     <>
       <Header />
@@ -64,7 +55,9 @@ const AllPosts = () => {
                             />
                           </div>
                           <div className="col-lg-9 d-flex justify-content-center flex-column">
-                            <p className="title">{item.title}</p>
+                            <Link to={`/posts/${item.id}`}>
+                              <p className="title">{item.title}</p>
+                            </Link>
                             <Link to={`/posts/${item.id}`}>
                               <p className="more">{">>Xem Chi Tiết"}</p>
                             </Link>

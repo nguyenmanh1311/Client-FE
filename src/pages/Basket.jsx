@@ -32,9 +32,11 @@ const Basket = () => {
     });
   };
 
-  if (localStorage.getItem("accessToken") == null) {
-    navigate("/login");
-  }
+  useEffect(() => {
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+    }
+  });
 
   useEffect(() => {
     fetchCart();

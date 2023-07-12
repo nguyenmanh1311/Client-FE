@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
@@ -18,6 +18,12 @@ const AllOrder = () => {
   const clickNav = (status) => {
     setType(status);
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+    }
+  });
   return (
     <>
       <Header />

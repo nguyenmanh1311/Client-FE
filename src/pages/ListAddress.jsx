@@ -19,6 +19,12 @@ const Address = () => {
   };
 
   useEffect(() => {
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+    }
+  });
+
+  useEffect(() => {
     fetchAddressList();
   }, []);
   return (

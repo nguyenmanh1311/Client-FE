@@ -87,6 +87,11 @@ const CheckAddress = () => {
       }
     });
   };
+  useEffect(() => {
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+    }
+  });
 
   useEffect(() => {
     let isFetched = true;

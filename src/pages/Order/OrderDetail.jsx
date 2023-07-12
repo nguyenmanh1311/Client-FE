@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import SidebarCustomer from "../../components/Sidebar/SidebarCustomer";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -11,6 +11,8 @@ import FeedbackModel from "./FeedbackModel";
 const OrderDetail = () => {
   const [invoiceDetail, setInvoiceDetail] = useState([]);
   const { id } = useParams();
+  const navigate = useNavigate();
+
   let total = 0;
 
   const [showFormRating, setShowFormRating] = useState(false);
@@ -21,6 +23,12 @@ const OrderDetail = () => {
     setFeedback(pro);
     window.scrollTo(0, 0);
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+    }
+  });
 
   useEffect(() => {
     let isFetched = true;
