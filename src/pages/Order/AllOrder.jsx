@@ -75,7 +75,7 @@ const AllOrder = () => {
                                   <span className=""> MOMO</span>
                                 )}
                                 {item.payment_method === 1 && (
-                                  <span className=""> </span>
+                                  <span className=""> VNPAY</span>
                                 )}
                                 {item.payment_method === 3 && (
                                   <span className=""> COD</span>
@@ -102,7 +102,9 @@ const AllOrder = () => {
                               </div>
                               <div>
                                 Tổng tiền:{" "}
-                                {GlobalUtil.commas(item.total + "") + "₫"}
+                                {GlobalUtil.commas(
+                                  item.total + item.shipping_fee + ""
+                                ) + "₫"}
                               </div>
                             </div>
                             <div className="button-container d-flex flex-column ">

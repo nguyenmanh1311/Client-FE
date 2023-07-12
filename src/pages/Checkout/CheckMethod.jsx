@@ -12,6 +12,7 @@ import { MdPayment } from "react-icons/md";
 import GHN from "../../assets/images/delivery/GHN.png";
 import MOMO from "../../assets/images/payment/momo.png";
 import COD from "../../assets/images/payment/cod.png";
+import VNPAY from "../../assets/images/payment/vnpay.png";
 import { InvoiceService } from "../../services/invoice.service";
 import useDeliveryData from "../../hooks/useDeliveryData";
 
@@ -48,6 +49,14 @@ const CheckMethod = () => {
 
     if (paymentId === 2) {
       InvoiceService.placeOrderMomo(paymentData).then((res) => {
+        if (res.status_code === 200) {
+          window.location.href = res.data.pay_url;
+        }
+      });
+    }
+
+    if (paymentId === 1) {
+      InvoiceService.placeOrderVNPay(paymentData).then((res) => {
         if (res.status_code === 200) {
           window.location.href = res.data.pay_url;
         }
@@ -297,7 +306,9 @@ const CheckMethod = () => {
                                 }
                               }}
                             />
-                            <p className="uppercase">{item.short_name}</p>
+                            <div className="uppercase gap-3">
+                              {item.short_name}
+                            </div>
                             <div className="">
                               <img
                                 style={{ width: "60px", height: "30px" }}
@@ -365,6 +376,27 @@ const CheckMethod = () => {
                         <img
                           style={{ width: "50px", height: "50px" }}
                           src={MOMO}
+                          alt=""
+                        />
+                      </div>
+                    </div>
+                  </label>
+                  <label className="d-flex gap-3" htmlFor="vnpay">
+                    <div className="row d-flex align-items-center ">
+                      <div className="">
+                        <input
+                          type="radio"
+                          name="payment"
+                          className="mr-2"
+                          id="vnpay"
+                          value="1"
+                        />
+                        THANH TOÁN BẰNG VNPAY
+                      </div>
+                      <div className="">
+                        <img
+                          style={{ width: "50px", height: "50px" }}
+                          src={VNPAY}
                           alt=""
                         />
                       </div>

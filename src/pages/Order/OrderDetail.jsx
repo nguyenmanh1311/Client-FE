@@ -191,7 +191,7 @@ const OrderDetail = () => {
                           <span className=""> MOMO</span>
                         )}
                         {invoiceDetail.payment_method === 2 && (
-                          <span className=""> </span>
+                          <span className=""> VNPAY</span>
                         )}
                         {invoiceDetail.payment_method === 3 && (
                           <span className=""> COD</span>

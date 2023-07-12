@@ -40,6 +40,14 @@ const placeOrderMomo = (data) => {
     });
 };
 
+const placeOrderVNPay = (data) => {
+  return axiosInstance
+    .post(configAPI.baseUrlApiMain + "/invoice/vnpay", data)
+    .then((res) => {
+      return res.data;
+    });
+};
+
 const updatePaymentStatus = (input) => {
   return axiosInstance
     .patch(configAPI.baseUrlApiMain + "/invoice/change-status", input)
@@ -53,6 +61,7 @@ export const InvoiceService = {
   createInvoiceByCartId,
   placeOrderMomo,
   placeOrderCOD,
+  placeOrderVNPay,
   updatePaymentStatus,
   getInvoiceByInvoiceId,
 };

@@ -12,7 +12,6 @@ import Login from "../components/Login/Login";
 import ProductByBrand from "../pages/ProductByBrand";
 import ProductByCategory from "../pages/ProductByCategory";
 
-import PaymentResolve from "../pages/PaymentResolve";
 import PaymentSuccess from "../pages/PaymentResponse/PaymentSuccess";
 import PaymentFail from "../pages/PaymentResponse/PaymentFail";
 
@@ -32,6 +31,8 @@ import OTP from "../components/OTP/OTP";
 import ProductDetail from "../pages/ProductDetail/ProductDetail";
 import AllPosts from "../pages/Post/AllPosts";
 import PostDetail from "../pages/Post/PostDetail";
+import MomoResolve from "../pages/PaymentResolve/MomoResolve";
+import VNPayResolve from "../pages/PaymentResolve/VNPayResolve";
 
 function App() {
   return (
@@ -52,7 +53,10 @@ function App() {
             <Route path="/check-address" element={<CheckAddress />} />
             <Route path="/check-method" element={<CheckMethod />} />
             <Route path="/collections" element={<Category />} />
-            <Route path="/checkout_result" element={<PaymentResolve />} />
+            <Route path="/checkout_result">
+              <Route path="momo" element={<MomoResolve />} />
+              <Route path="vnpay" element={<VNPayResolve />} />
+            </Route>
             <Route path="/search">
               <Route path=":input" element={<Search />} />
             </Route>

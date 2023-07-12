@@ -55,7 +55,7 @@ const AllPosts = () => {
                   {posts.length > 0 &&
                     posts.map((item, index) => {
                       return (
-                        <div className="row" key={index}>
+                        <div className="row post-item" key={index}>
                           <div className="col-lg-3">
                             <img
                               src={"https://" + item?.post_images[0]?.uri}

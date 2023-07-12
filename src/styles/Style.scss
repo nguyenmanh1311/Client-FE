@@ -1638,6 +1638,10 @@ a.text-primary:focus {
   letter-spacing: 0.1em;
 }
 
+.uppercase {
+  text-transform: uppercase;
+}
+
 /*
    * 4. PAGINATION
    */
@@ -2808,6 +2812,10 @@ code {
   .logo {
     width: 150px;
     height: 150px;
+  }
+
+  .post-item {
+    margin-top: 20px;
   }
 }
 
