@@ -2591,6 +2591,16 @@ code {
         color: rgb(255, 255, 255) !important;
         outline: none !important;
       }
+
+      .btn-blue,
+      .btn-blue:focus,
+      .btn-blue:hover,
+      .btn-blue:active {
+        background: linear-gradient(to right, #0559a8de, #28add6);
+        border-color: rgb(17, 167, 205) !important;
+        color: rgb(255, 255, 255) !important;
+        outline: none !important;
+      }
     }
   }
 }
