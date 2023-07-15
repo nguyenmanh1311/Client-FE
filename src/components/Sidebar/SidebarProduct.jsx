@@ -52,14 +52,9 @@ const SidebarProduct = ({ category_id, brand_id }) => {
         setAllBrand(res.data);
       });
     };
-    if (isFetched) {
-      fetchshowAllBrand();
-      fetchshowAllCategory();
-    }
 
-    return () => {
-      isFetched = false;
-    };
+    fetchshowAllBrand();
+    fetchshowAllCategory();
   }, []);
 
   const applyFilterPriceHandleClick = () => {
