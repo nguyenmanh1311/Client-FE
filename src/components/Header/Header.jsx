@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import swal2 from "sweetalert2";
 import { AuthService } from "../../services/auth.service";
 import SearchList from "../Search/SearchList";
+import { CartService } from "../../services/cart.service";
+import { useDataContext } from "../../context/DataProvider";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -21,6 +23,9 @@ const Header = () => {
   const [allCategory, setAllCategory] = useState([]);
   const [searchInput, setSearchInput] = useState([]);
   const [user, setUser] = useState([]);
+  const { quantityBasket } = useDataContext();
+  const [cartItemCount, setCartItemCount] = useState(0);
+
   const logoutOnclick = async () => {
     swal2
       .fire({
@@ -69,7 +74,14 @@ const Header = () => {
       navigate("/basket");
     }
   };
-
+  useEffect(() => {
+    const fetchCart = () => {
+      CartService.getCart().then((res) => {
+        setCartItemCount(res?.total_count ?? 0);
+      });
+    };
+    fetchCart();
+  }, [quantityBasket]);
   useEffect(() => {
     let isFetched = true;
     const fetchshowAllCategory = () => {
@@ -234,9 +246,12 @@ const Header = () => {
                 className="navbar-collapse collapse d-none d-lg-block"
                 onClick={onClickBasket}
               >
-                <Link to={""} className="btn btn-lg navbar-btn">
+                <Link
+                  to={""}
+                  className="btn btn-lg navbar-btn d-flex align-items-center"
+                >
                   <FaShoppingCart className="fa fa-shopping-cart d-flex align-items-center" />{" "}
-                  <span></span>
+                  {cartItemCount > 0 ? <span> ({cartItemCount})</span> : ""}
                 </Link>
               </div>
               {!localStorage.getItem("accessToken") && (

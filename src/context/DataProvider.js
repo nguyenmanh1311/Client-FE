@@ -18,6 +18,9 @@ export const DataProvider = ({ children }) => {
   const [brands, setBrands] = useState([]);
   const [color, setColor] = useState([]);
 
+  //Basket
+  const [quantityBasket, setQuantityBasket] = useState(false);
+
   const data = {
     productData,
     phoneForgetPass,
@@ -29,6 +32,7 @@ export const DataProvider = ({ children }) => {
     brands,
     pageCount,
     color,
+    quantityBasket,
   };
   const setData = {
     setProductData,
@@ -41,6 +45,7 @@ export const DataProvider = ({ children }) => {
     setCategories,
     setBrands,
     setColor,
+    setQuantityBasket,
   };
 
   return (

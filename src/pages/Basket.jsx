@@ -13,10 +13,12 @@ import { FaCartPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 import { CartService } from "../services/cart.service";
+import { useDataContext } from "../context/DataProvider";
 
 const Basket = () => {
   const [cartDetail, setCartDetail] = useState([]);
   const [statusCart, setStatusCart] = useState(true);
+  const { quantityBasket, setQuantityBasket } = useDataContext();
 
   let data = {};
   let total = 0;
@@ -40,11 +42,9 @@ const Basket = () => {
 
   useEffect(() => {
     fetchCart();
-
-    return () => {};
   }, []);
 
-  const onChangeQuantity = (value) => {
+  const onChangeQuantity = (value, e) => {
     const dataUpdate = { quantity: Number(value.quantity) };
     const id = value.id;
     if (dataUpdate.quantity > 0) {
@@ -130,10 +130,10 @@ const Basket = () => {
                           <thead>
                             <tr>
                               <th></th>
-                              <th>Tên sản phẩm</th>
-                              <th>Số lượng</th>
-                              <th>Đơn giá</th>
-                              <th>Tổng</th>
+                              <th style={{ width: "200px" }}>Tên sản phẩm</th>
+                              <th style={{ width: "100px" }}>Số lượng</th>
+                              <th style={{ width: "200px" }}>Đơn giá</th>
+                              <th style={{ width: "200px" }}>Tổng</th>
                               <th></th>
                             </tr>
                           </thead>
@@ -163,14 +163,15 @@ const Basket = () => {
                                     <input
                                       type="number"
                                       defaultValue={item?.quantity}
-                                      min="1"
+                                      min="0"
                                       className="form-control"
                                       onChange={(e) =>
                                         onChangeQuantity(
                                           (data = {
                                             id: item.id,
                                             quantity: e.target.value,
-                                          })
+                                          }),
+                                          e
                                         )
                                       }
                                     />
@@ -190,7 +191,7 @@ const Basket = () => {
                                   </td>
                                   <td>
                                     <div
-                                      onClick={() => {
+                                      onClick={(e) => {
                                         Swal.fire({
                                           title:
                                             "Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không ?",
@@ -213,7 +214,11 @@ const Basket = () => {
                                               item.id
                                             ).then((res) => {
                                               if (res.status_code === 200) {
-                                                window.location.reload();
+                                                fetchCart();
+                                                // window.location.reload();
+                                                setQuantityBasket(
+                                                  !quantityBasket
+                                                );
                                               }
                                             });
                                           } else if (result.isDenied) {

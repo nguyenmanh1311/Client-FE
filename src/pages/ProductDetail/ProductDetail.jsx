@@ -20,6 +20,7 @@ import { GlobalUtil } from "../../utils/GlobalUtil";
 import StarRatings from "react-star-ratings";
 import SelectRating from "./SelectRating";
 import useRatingData from "../../hooks/useRatingData";
+import { useDataContext } from "../../context/DataProvider";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -27,6 +28,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState([]);
   const [productRelattionship, setProductRelationship] = useState([]);
   const [currentImgUp, setCurrentImgUp] = useState("");
+  const { quantityBasket, setQuantityBasket } = useDataContext();
   let [count, setCount] = useState(1);
 
   const { data, setType } = useRatingData(1);
@@ -76,6 +78,7 @@ const ProductDetail = () => {
             "Thêm sản phẩm vào giỏ hàng thành công!",
             "success"
           );
+          setQuantityBasket(!quantityBasket);
         }
       });
     }
