@@ -50,7 +50,7 @@ const CheckMethod = () => {
           navigate("/success");
         }
       });
-      localStorage.removeItem("address-id");
+      localStorage.getItem("address-id", defaultAddress.id);
     }
 
     if (paymentId === 2) {
@@ -59,7 +59,7 @@ const CheckMethod = () => {
           window.location.href = res.data.pay_url;
         }
       });
-      localStorage.removeItem("address-id");
+      localStorage.getItem("address-id", defaultAddress.id);
     }
 
     if (paymentId === 1) {
@@ -68,7 +68,7 @@ const CheckMethod = () => {
           window.location.href = res.data.pay_url;
         }
       });
-      localStorage.removeItem("address-id");
+      localStorage.getItem("address-id", defaultAddress.id);
     }
   };
 
