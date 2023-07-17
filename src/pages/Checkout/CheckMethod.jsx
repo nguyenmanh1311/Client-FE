@@ -175,10 +175,6 @@ const CheckMethod = () => {
                       {address?.is_default === true && (
                         <div className="default-address">Mặc định</div>
                       )}
-                      {!address?.is_default &&
-                        defaultAddress?.is_default === true && (
-                          <div className="default-address">Mặc định</div>
-                        )}
                     </div>
                     <div className="col-lg-2">
                       <div
