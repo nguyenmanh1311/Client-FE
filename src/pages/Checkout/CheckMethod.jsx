@@ -128,7 +128,7 @@ const CheckMethod = () => {
 
   useEffect(() => {
     fetchCart();
-  }, [paymentId, data]);
+  }, []);
   return (
     <>
       <Header />
