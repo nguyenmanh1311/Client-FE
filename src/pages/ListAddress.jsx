@@ -66,7 +66,13 @@ const Address = () => {
                   <br />
                   {addressList.province_id}
                   {addressList?.map((address) => {
-                    return <AddressItem {...address} key={address.id} />;
+                    return (
+                      <AddressItem
+                        {...address}
+                        key={address.id}
+                        fetchAddressList={fetchAddressList}
+                      />
+                    );
                   })}
                 </div>
               </div>

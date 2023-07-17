@@ -87,6 +87,13 @@ const CheckAddress = () => {
       }
     });
   };
+
+  const fetchAddressList = () => {
+    AddressService.getAddress().then((res) => {
+      setAddressList(res.data);
+    });
+  };
+
   useEffect(() => {
     if (localStorage.getItem("accessToken") === null) {
       navigate("/login");
@@ -94,16 +101,7 @@ const CheckAddress = () => {
   });
 
   useEffect(() => {
-    let isFetched = true;
-    const fetchAddressList = () => {
-      AddressService.getAddress().then((res) => {
-        setAddressList(res.data);
-      });
-    };
     fetchAddressList();
-    return () => {
-      isFetched = false;
-    };
   }, []);
   return (
     <>
@@ -133,7 +131,7 @@ const CheckAddress = () => {
                   <GiPositionMarker /> ĐỊA CHỈ
                 </div>
               </div>
-              <div className="col-lg-6">
+              <div className="col-lg-6" id="checkaddress">
                 <div className="box">
                   <h3 className="font-weight-bold text-info">
                     Chọn địa chỉ đã lưu
@@ -151,7 +149,10 @@ const CheckAddress = () => {
                               setAddressId(item.id);
                             }}
                           />{" "}
-                          <AddressItem {...item} />
+                          <AddressItem
+                            {...item}
+                            fetchAddressList={fetchAddressList}
+                          />
                         </label>
                       </>
                     );

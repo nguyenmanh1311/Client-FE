@@ -45,10 +45,10 @@ const useDeliveryData = () => {
       from_district_id: SHOP_DISTRICT_CODE,
       to_district_id: addressObj.district_id,
       to_ward_code: String(addressObj.ward_id),
-      height: 2,
-      length: 20,
-      weight: 50,
-      width: 20,
+      height: 45,
+      length: 30,
+      weight: 1000,
+      width: 15,
     });
 
     var config = {

@@ -269,7 +269,7 @@ const Basket = () => {
 
                         <div className="right">
                           <Link
-                            to={`/check-address`}
+                            to={`/check-method`}
                             className="btn btn-outline-secondary"
                             style={{ fontSize: "14px" }}
                           >

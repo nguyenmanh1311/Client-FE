@@ -15,19 +15,24 @@ import COD from "../../assets/images/payment/cod.png";
 import VNPAY from "../../assets/images/payment/vnpay.png";
 import { InvoiceService } from "../../services/invoice.service";
 import useDeliveryData from "../../hooks/useDeliveryData";
+import { AddressService } from "../../services/address.service";
 
 const CheckMethod = () => {
   const [cartDetail, setCartDetail] = useState([]);
   const [cartId, setCartId] = useState("");
   const [paymentId, setPaymentId] = useState(null);
+  const [defaultAddress, setDefaultAddress] = useState();
   const [deliveryMethodName, setDeliveryMethodName] = useState(null);
   const [deliveryId, setDeliveryId] = useState(null);
+  const [address, setAddress] = useState([]);
+  const [data, setData] = useState(null);
+
+  const navigate = useNavigate();
+
   const { services, getService, deliveryFee, calculateFee } =
     useDeliveryData(true);
 
   let total = 0;
-
-  const navigate = useNavigate();
 
   const deliveryMethodChange = (e) => {
     calculateFee(Number(e.target.value), total);
@@ -45,6 +50,7 @@ const CheckMethod = () => {
           navigate("/success");
         }
       });
+      localStorage.removeItem("address-id");
     }
 
     if (paymentId === 2) {
@@ -53,6 +59,7 @@ const CheckMethod = () => {
           window.location.href = res.data.pay_url;
         }
       });
+      localStorage.removeItem("address-id");
     }
 
     if (paymentId === 1) {
@@ -61,8 +68,35 @@ const CheckMethod = () => {
           window.location.href = res.data.pay_url;
         }
       });
+      localStorage.removeItem("address-id");
     }
   };
+
+  const selectAddress = () => {
+    navigate("/check-address");
+  };
+
+  const fetchCart = () => {
+    CartService.getCart().then((res) => {
+      setCartId(res.data.id);
+      CartService.getAllCartDetailByCartID(cartId).then((res) => {
+        if (res.data == null) {
+          navigate("/basket");
+        }
+        if (res.data != null) {
+          setCartDetail(res.data ? res.data : []);
+        }
+      });
+    });
+  };
+
+  const getDefaultAddress = () => {
+    AddressService.getDefaultAddress().then((res) => {
+      setDefaultAddress(res.data);
+      localStorage.setItem("address-id", JSON.stringify(res.data.id));
+    });
+  };
+
   useEffect(() => {
     if (localStorage.getItem("accessToken") === null) {
       navigate("/login");
@@ -70,32 +104,31 @@ const CheckMethod = () => {
   });
 
   useEffect(() => {
-    let isFetched = true;
-
-    const fetchCart = () => {
-      CartService.getCart().then((res) => {
-        setCartId(res.data.id);
-        if (isFetched) {
-          CartService.getAllCartDetailByCartID(cartId).then((res) => {
-            if (isFetched) {
-              if (res.data == null) {
-                navigate("/basket");
-              }
-              if (res.data != null) {
-                setCartDetail(res.data ? res.data : []);
-              }
-            }
-          });
-        }
-      });
-    };
-
-    fetchCart();
-    return () => {
-      isFetched = false;
-    };
+    getDefaultAddress();
   }, []);
-  useEffect(() => {}, [paymentId]);
+
+  const getAddressByID = (data) => {
+    AddressService.getAddressByID(data).then((res) => {
+      setAddress(res.data);
+    });
+  };
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("address-id");
+    if (storedData) {
+      setData(JSON.parse(storedData));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      getAddressByID(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    fetchCart();
+  }, [paymentId]);
   return (
     <>
       <Header />
@@ -115,7 +148,50 @@ const CheckMethod = () => {
                   </ol>
                 </nav>
               </div>
-              <div className="col-lg-7">
+              <div className="col-lg-12">
+                <div className="box">
+                  <div
+                    className="font-weight-bold text-danger d-flex justify-content-center align-items-center"
+                    style={{
+                      fontSize: "20px",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <ImTruck className="mr-2" />
+                    ĐỊA CHỈ NHẬN HÀNG
+                  </div>
+                  <div className="col-lg-12 d-flex">
+                    <div className="col-lg-10">
+                      <strong>Họ tên người nhận:</strong>{" "}
+                      {address?.fullname || defaultAddress?.fullname} -{" "}
+                      {address?.phone_number || defaultAddress?.phone_number}
+                      <br />
+                      <strong>Địa chỉ nhận hàng:</strong>{" "}
+                      {address?.address_string ||
+                        defaultAddress?.address_string}
+                      , {address?.ward_name || defaultAddress?.ward_name},{" "}
+                      {address?.district_name || defaultAddress?.district_name},{" "}
+                      {address?.province_name || defaultAddress?.province_name}
+                      {address?.is_default === true && (
+                        <div className="default-address">Mặc định</div>
+                      )}
+                      {!address?.is_default &&
+                        defaultAddress?.is_default === true && (
+                          <div className="default-address">Mặc định</div>
+                        )}
+                    </div>
+                    <div className="col-lg-2">
+                      <div
+                        className="btn btn-danger btn-blue"
+                        onClick={selectAddress}
+                      >
+                        Thay đổi
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-12">
                 <div className="box">
                   <div
                     className="font-weight-bold text-danger d-flex justify-content-center align-items-center"
@@ -165,72 +241,81 @@ const CheckMethod = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {cartDetail?.map((item) => {
-                          {
-                            deliveryFee?.total
-                              ? (total =
-                                  total +
-                                  Number(item?.product?.price) *
-                                    Number(item.quantity) +
-                                  deliveryFee?.total)
-                              : (total =
-                                  total +
-                                  Number(item?.product?.price) *
-                                    Number(item.quantity));
-                          }
-                          return (
-                            <tr key={item.id}>
-                              <td>
-                                <Link to={`/product-detail`}>
-                                  <img
-                                    src={
-                                      "https://" +
-                                      item?.product?.product_images[0].uri
-                                    }
-                                    style={{
-                                      width: "50px",
-                                      height: "50px",
-                                    }}
-                                    alt=""
-                                  />
-                                </Link>
-                              </td>
-                              <td>
-                                <Link to={`/product-detail`}>
-                                  {item?.product?.name}
-                                </Link>
-                              </td>
-                              <td
-                                style={{
-                                  textAlign: "center",
-                                }}
-                              >
-                                {item.quantity}
-                              </td>
-                              <td
-                                style={{
-                                  textAlign: "center",
-                                }}
-                              >
-                                {GlobalUtil.commas(
-                                  Number(item?.product?.price) + ""
-                                ) + "₫"}
-                              </td>
+                        {cartDetail.length > 0 &&
+                          cartDetail?.map((item) => {
+                            {
+                              deliveryFee?.total
+                                ? (total =
+                                    total +
+                                    Number(item?.product?.price) *
+                                      Number(item.quantity) +
+                                    deliveryFee?.total)
+                                : (total =
+                                    total +
+                                    Number(item?.product?.price) *
+                                      Number(item.quantity));
+                            }
+                            return (
+                              <tr key={item.id}>
+                                <td>
+                                  <Link to={`/product-detail`}>
+                                    <img
+                                      src={
+                                        "https://" +
+                                        item?.product?.product_images[0].uri
+                                      }
+                                      style={{
+                                        width: "150px",
+                                        height: "150px",
+                                      }}
+                                      alt=""
+                                    />
+                                  </Link>
+                                </td>
+                                <td
+                                  style={{
+                                    textAlign: "center",
+                                    verticalAlign: "middle",
+                                  }}
+                                >
+                                  <Link to={`/product-detail`}>
+                                    {item?.product?.name}
+                                  </Link>
+                                </td>
+                                <td
+                                  style={{
+                                    textAlign: "center",
+                                    verticalAlign: "middle",
+                                  }}
+                                >
+                                  {item.quantity}
+                                </td>
+                                <td
+                                  style={{
+                                    textAlign: "center",
+                                    verticalAlign: "middle",
+                                  }}
+                                >
+                                  {GlobalUtil.commas(
+                                    Number(item?.product?.price) + ""
+                                  ) + "₫"}
+                                </td>
 
-                              <td
-                                style={{
-                                  textAlign: "center",
-                                }}
-                              >
-                                {GlobalUtil.commas(
-                                  Number(item?.product?.price) *
-                                    Number(item.quantity) +
-                                    ""
-                                ) + "₫"}
-                              </td>
-                            </tr>
-                          );
-                        })}
+                                <td
+                                  style={{
+                                    textAlign: "center",
+                                    verticalAlign: "middle",
+                                  }}
+                                >
+                                  {GlobalUtil.commas(
+                                    Number(item?.product?.price) *
+                                      Number(item.quantity) +
+                                      ""
+                                  ) + "₫"}
+                                </td>
+                              </tr>
+                            );
+                          })}
                       </tbody>
                       <tfoot>
                         <tr>
@@ -278,7 +363,7 @@ const CheckMethod = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-5">
+              <div className="col-lg-12">
                 <div
                   className="box"
                   onChange={(e) => {
@@ -327,7 +412,8 @@ const CheckMethod = () => {
                     })}
                   </div>
                 </div>
-
+              </div>
+              <div className="col-lg-12">
                 <div
                   className="box"
                   onChange={(e) => {
@@ -411,7 +497,7 @@ const CheckMethod = () => {
 
                 <button
                   type="button"
-                  className="d-flex justify-content-center btn btn-danger"
+                  className="d-flex justify-content-center btn btn-danger gradient"
                   style={{
                     margin: "auto",
                     marginTop: "10px",

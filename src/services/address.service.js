@@ -79,6 +79,24 @@ const deleteAddress = (id) => {
     });
 };
 
+const chooseDefaultAddress = (id) => {
+  return axiosInstance
+    .patch(
+      configAPI.baseUrlApiAuth + `/address/choose-default/${id}/choose-default`
+    )
+    .then((res) => {
+      return res.data;
+    });
+};
+
+const getDefaultAddress = () => {
+  return axiosInstance
+    .get(configAPI.baseUrlApiAuth + "/address/get-default/default")
+    .then((res) => {
+      return res.data;
+    });
+};
+
 export const AddressService = {
   getProvince,
   getDistrict,
@@ -88,4 +106,6 @@ export const AddressService = {
   createAddress,
   updateAddress,
   deleteAddress,
+  chooseDefaultAddress,
+  getDefaultAddress,
 };

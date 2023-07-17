@@ -1250,11 +1250,40 @@ h1 {
 }
 
 #content {
+  .default-address {
+    font-weight: bold;
+    color: rgb(220 55 70);
+    width: fit-content;
+    border: 1px solid rgb(220 55 70);
+    padding: 3px 5px;
+    font-size: 12px;
+  }
+  .btn-blue {
+    background: linear-gradient(
+      to right,
+      rgba(5, 89, 168, 0.8705882353),
+      #28add6
+    );
+    border-color: rgb(17, 167, 205) !important;
+    color: rgb(255, 255, 255) !important;
+    outline: none !important;
+  }
   #customer-address {
     .title-address {
       h4 {
         margin: 0 !important;
       }
+    }
+
+    .btn-blue {
+      background: linear-gradient(
+        to right,
+        rgba(5, 89, 168, 0.8705882353),
+        #28add6
+      );
+      border-color: rgb(17, 167, 205) !important;
+      color: rgb(255, 255, 255) !important;
+      outline: none !important;
     }
   }
 }
