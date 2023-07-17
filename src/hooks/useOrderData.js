@@ -4,37 +4,25 @@ import { InvoiceService } from "../services/invoice.service";
 const useOrderData = (status) => {
   const [data, setData] = useState([]);
   const [type, setType] = useState(status);
-  const fetchData = (status) => {
-    if (status === 1) {
-      InvoiceService.getAllInvoice().then((res) => {
-        setData(res.data);
-      });
-    }
-    if (status === 2) {
-      InvoiceService.getAllInvoice({ status: 1 }).then((res) => {
-        setData(res.data);
-      });
-    }
-    if (status === 3) {
-      InvoiceService.getAllInvoice({ status: 2 }).then((res) => {
-        setData(res.data);
-      });
-    }
-    if (status === 4) {
-      InvoiceService.getAllInvoice({ status: 3 }).then((res) => {
-        setData(res.data);
-      });
-    }
-    if (status === 5) {
-      InvoiceService.getAllInvoice({ status: 4 }).then((res) => {
-        setData(res.data);
-      });
-    }
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
+  const fetchData = () => {
+    let data1 = {
+      page: page,
+      page_count: 5,
+      order_by: "CreatedAt desc",
+      status: type,
+    };
+    InvoiceService.getAllInvoice(data1).then((res) => {
+      setData(res.data);
+      const pageCountRounded = Math.ceil(res.total_count / res.page_size);
+      setPageCount(pageCountRounded);
+    });
   };
   useEffect(() => {
     fetchData(type);
-  }, [type]);
-  return { data, setType };
+  }, [type, page]);
+  return { data, setType, setPage, pageCount };
 };
 
 export default useOrderData;

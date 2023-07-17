@@ -1,9 +1,9 @@
 import { axiosInstance } from "../configuration/axios.config";
 import configAPI from "../configuration/apiConfig.json";
 
-const getAllInvoice = (input) => {
+const getAllInvoice = (data1) => {
   return axiosInstance
-    .get(configAPI.baseUrlApiMain + "/invoice/my-invoice", { params: input })
+    .get(configAPI.baseUrlApiMain + `/invoice/my-invoice`, { params: data1 })
     .then((res) => {
       return res.data;
     });

@@ -9,10 +9,10 @@ const Navigation = ({ onClickNav }) => {
         <li style={{ width: "15%" }}>
           <a
             onClick={() => {
-              onClickNav(1);
-              setStatus(1);
+              onClickNav(null);
+              setStatus(null);
             }}
-            className={status === 1 ? "active" : undefined}
+            className={status === null ? "active" : undefined}
           >
             Tất cả
           </a>
@@ -20,10 +20,10 @@ const Navigation = ({ onClickNav }) => {
         <li style={{ width: "20%" }}>
           <a
             onClick={() => {
-              onClickNav(2);
-              setStatus(2);
+              onClickNav(1);
+              setStatus(1);
             }}
-            className={status === 2 ? "active" : undefined}
+            className={status === 1 ? "active" : undefined}
           >
             Chờ xác nhận
           </a>
@@ -31,21 +31,21 @@ const Navigation = ({ onClickNav }) => {
         <li style={{ width: "30%" }}>
           <a
             onClick={() => {
-              onClickNav(3);
-              setStatus(3);
+              onClickNav(2);
+              setStatus(2);
             }}
-            className={status === 3 ? "active" : undefined}
+            className={status === 2 ? "active" : undefined}
           >
-            Đang chuẩn bị hàng
+            Đang giao hàng
           </a>
         </li>
         <li style={{ width: "20%" }}>
           <a
             onClick={() => {
-              onClickNav(4);
-              setStatus(4);
+              onClickNav(3);
+              setStatus(3);
             }}
-            className={status === 4 ? "active" : undefined}
+            className={status === 3 ? "active" : undefined}
           >
             Hoàn thành
           </a>
@@ -53,10 +53,10 @@ const Navigation = ({ onClickNav }) => {
         <li style={{ width: "15%" }}>
           <a
             onClick={() => {
-              onClickNav(5);
-              setStatus(5);
+              onClickNav(4);
+              setStatus(4);
             }}
-            className={status === 5 ? "active" : undefined}
+            className={status === 4 ? "active" : undefined}
           >
             Đã hủy
           </a>

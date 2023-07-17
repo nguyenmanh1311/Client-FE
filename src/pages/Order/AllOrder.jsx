@@ -9,20 +9,18 @@ import Navigation from "./Nav/Navigation";
 import useOrderData from "../../hooks/useOrderData";
 import emptyOrder from "../../assets/images/don-hang-trong.png";
 import ReactPaginate from "react-paginate";
-import { useState } from "react";
 
 const AllOrder = () => {
   const navigate = useNavigate();
-  const { data, setType } = useOrderData(1);
-  const [currentPageNumber, setCurrentPageNumber] = useState(1);
-  const [pageCount, setPageCount] = useState(0);
+  const { data, setType, setPage, pageCount } = useOrderData(null);
 
   const clickNav = (status) => {
     setType(status);
+    setPage(1);
   };
 
   const handlePageClick = (event) => {
-    setCurrentPageNumber(event.selected + 1);
+    setPage(event.selected + 1);
   };
 
   useEffect(() => {
@@ -30,44 +28,7 @@ const AllOrder = () => {
       navigate("/login");
     }
   });
-  // useEffect(() => {
-  //   function getOrders() {
-  //     const data = {
-  //       page_count: 10,
-  //       order_by: "CreatedAt desc",
-  //       page: currentPageNumber,
-  //     };
-  //     OrderService.getAllOrder(data).then((res) => {
-  //       stt.current = res?.offset + 1;
-  //       setData(() => {
-  //         const onResult = res.data.map((item, index) => {
-  //           if (stt.current > 10) {
-  //             return {
-  //               index: stt.current++,
-  //               createdDate: GlobalUtil.dateConvert(item.created_at),
-  //               totalPrice:
-  //                 GlobalUtil.commas(item.total + item.shipping_fee + "") + "₫",
-  //               ...item,
-  //             };
-  //           }
-  //           if (stt.current <= 10) {
-  //             return {
-  //               index: ++index,
-  //               createdDate: GlobalUtil.dateConvert(item.created_at),
-  //               totalPrice:
-  //                 GlobalUtil.commas(item.total + item.shipping_fee + "") + "₫",
-  //               ...item,
-  //             };
-  //           }
-  //         });
-  //         return onResult;
-  //       });
-  //       const pageCountRounded = Math.ceil(res.total_count / res.page_size);
-  //       setPageCount(pageCountRounded);
-  //     });
-  //   }
-  //   getOrders();
-  // }, [currentPageNumber]);
+
   return (
     <>
       <Header />
@@ -137,7 +98,7 @@ const AllOrder = () => {
                                   <span className=""> Đang chờ xác nhận</span>
                                 )}
                                 {item.status === 2 && (
-                                  <span className=""> Đang chuẩn bị hàng</span>
+                                  <span className=""> Đang giao hàng</span>
                                 )}
                                 {item.status === 3 && (
                                   <span className=""> Hoàn thành</span>
@@ -199,27 +160,30 @@ const AllOrder = () => {
                         </div>
                       );
                     })}
+                  <br />
+                  {pageCount > 1 && (
+                    <ReactPaginate
+                      className="pagination-item"
+                      breakLabel="..."
+                      nextLabel="►"
+                      onPageChange={handlePageClick}
+                      pageRangeDisplayed={5}
+                      pageCount={pageCount}
+                      previousLabel="◄"
+                      renderOnZeroPageCount={null}
+                      breakClassName={"page-item"}
+                      breakLinkClassName={"page-link"}
+                      containerClassName={"pagination"}
+                      pageClassName={"page-item"}
+                      pageLinkClassName={"page-link"}
+                      previousClassName={"page-item"}
+                      previousLinkClassName={"page-link"}
+                      nextClassName={"page-item"}
+                      nextLinkClassName={"page-link"}
+                      activeClassName={"active"}
+                    />
+                  )}
                 </div>
-                <ReactPaginate
-                  className="pagination-item "
-                  breakLabel="..."
-                  nextLabel="►"
-                  onPageChange={handlePageClick}
-                  pageRangeDisplayed={5}
-                  pageCount={pageCount}
-                  previousLabel="◄"
-                  renderOnZeroPageCount={null}
-                  breakClassName={"page-item"}
-                  breakLinkClassName={"page-link"}
-                  containerClassName={"pagination"}
-                  pageClassName={"page-item"}
-                  pageLinkClassName={"page-link"}
-                  previousClassName={"page-item"}
-                  previousLinkClassName={"page-link"}
-                  nextClassName={"page-item"}
-                  nextLinkClassName={"page-link"}
-                  activeClassName={"active"}
-                />
               </div>
             </div>
           </div>
